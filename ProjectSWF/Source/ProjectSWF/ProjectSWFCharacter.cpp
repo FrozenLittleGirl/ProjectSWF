@@ -124,6 +124,7 @@ void AProjectSWFCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 	// Note: the 'Jump' action and the 'MoveRight' axis are bound to actual keys/buttons/sticks in DefaultInput.ini (editable from Project Settings..Input)
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("BasicAttack", IE_Pressed, this, &AProjectSWFCharacter::BasicAttacking);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AProjectSWFCharacter::MoveRight);
 
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AProjectSWFCharacter::TouchStarted);
@@ -136,6 +137,15 @@ void AProjectSWFCharacter::MoveRight(float Value)
 
 	// Apply the input to the character motion
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+}
+
+void AProjectSWFCharacter::BasicAttacking() {
+	Attacking = true;
+
+	Controller->StopMovement();
+	GetSprite()->SetFlipbook(BasicAttackAnimation);
+
+	Attacking = false;
 }
 
 void AProjectSWFCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)

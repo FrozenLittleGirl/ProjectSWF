@@ -40,17 +40,28 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* IdleAnimation;
 
+	// ... To falling
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 		class UPaperFlipbook* StopJumpAnimation;
 
+	// ... To Jump
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 		class UPaperFlipbook* WhileJumpAnimation;
+
+	// ... To attack
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+		class UPaperFlipbook* BasicAttackAnimation;
+
+	bool Attacking = false;
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
 	/** Called for side to side input */
 	void MoveRight(float Value);
+
+	// Attacking Actions
+	void BasicAttacking();
 
 	void UpdateCharacter();
 
