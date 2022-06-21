@@ -83,9 +83,25 @@ void AProjectSWFCharacter::UpdateAnimation()
 {
 	const FVector PlayerVelocity = GetVelocity();
 	const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
+	const float PlayerVelocityZ = PlayerVelocity.Z;
 
+	UPaperFlipbook* DesiredAnimation;
+
+	// Are we Jumping?
+	if (PlayerVelocityZ > 0.0f) {
+		DesiredAnimation = WhileJumpAnimation;
+	}
+	else if (PlayerVelocityZ < 0.0f) {
+		DesiredAnimation = StopJumpAnimation;
+	} 
 	// Are we moving or standing still?
-	UPaperFlipbook* DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
+	else if (PlayerSpeedSqr > 0.0f) {
+		DesiredAnimation = RunningAnimation;
+	}
+	else {
+		DesiredAnimation = IdleAnimation;
+	}
+
 	if( GetSprite()->GetFlipbook() != DesiredAnimation 	)
 	{
 		GetSprite()->SetFlipbook(DesiredAnimation);
