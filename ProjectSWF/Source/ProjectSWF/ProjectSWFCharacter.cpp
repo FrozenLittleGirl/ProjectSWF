@@ -176,6 +176,9 @@ void AProjectSWFCharacter::UpdateCharacter()
 	const FVector PlayerVelocity = GetVelocity();	
 	float TravelDirection = PlayerVelocity.X;
 	// Set the rotation so that the character faces his direction of travel.
+	if (Attacking) {
+		return;
+	}
 	if (Controller != nullptr)
 	{
 		if (TravelDirection < 0.0f)
