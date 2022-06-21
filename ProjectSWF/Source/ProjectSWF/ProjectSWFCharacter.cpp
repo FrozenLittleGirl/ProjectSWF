@@ -87,6 +87,18 @@ void AProjectSWFCharacter::UpdateAnimation()
 
 	UPaperFlipbook* DesiredAnimation;
 
+	// Deal with attacking
+	if (Attacking) {
+		DesiredAnimation = BasicAttackAnimation;
+
+		if (GetSprite()->GetFlipbook() != DesiredAnimation)
+		{
+			GetSprite()->SetFlipbook(DesiredAnimation);
+		}
+		
+		return;
+	}
+
 	// Are we Jumping?
 	if (PlayerVelocityZ > 0.0f) {
 		DesiredAnimation = WhileJumpAnimation;
@@ -140,12 +152,7 @@ void AProjectSWFCharacter::MoveRight(float Value)
 }
 
 void AProjectSWFCharacter::BasicAttacking() {
-	Attacking = true;
-
-	Controller->StopMovement();
-	GetSprite()->SetFlipbook(BasicAttackAnimation);
-
-	Attacking = false;
+	
 }
 
 void AProjectSWFCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
