@@ -52,6 +52,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 		class UPaperFlipbook* BasicAttackAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+		class UPaperFlipbook* DodgeAnimation;
+
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
@@ -84,4 +87,9 @@ public:
 private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool Attacking = false;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		bool Dodging = false;
+
+	float CountSeconds = 0;
 };

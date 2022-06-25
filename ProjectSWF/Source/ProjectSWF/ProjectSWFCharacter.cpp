@@ -87,6 +87,17 @@ void AProjectSWFCharacter::UpdateAnimation()
 
 	UPaperFlipbook* DesiredAnimation;
 
+	// Deal with Dodging
+	if (Dodging) {
+		DesiredAnimation = DodgeAnimation;
+
+		if (GetSprite()->GetFlipbook() != DesiredAnimation)
+		{
+			GetSprite()->SetFlipbook(DesiredAnimation);
+		}
+		return;
+	}
+
 	// Deal with attacking
 	if (Attacking) {
 		DesiredAnimation = BasicAttackAnimation;
@@ -124,6 +135,8 @@ void AProjectSWFCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
+
+
 	UpdateCharacter();	
 }
 
@@ -152,7 +165,8 @@ void AProjectSWFCharacter::MoveRight(float Value)
 }
 
 void AProjectSWFCharacter::BasicAttacking() {
-	
+	Attacking = true;
+	CountSeconds = GetWorld()->GetTimeSeconds();
 }
 
 void AProjectSWFCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
@@ -176,7 +190,7 @@ void AProjectSWFCharacter::UpdateCharacter()
 	const FVector PlayerVelocity = GetVelocity();	
 	float TravelDirection = PlayerVelocity.X;
 	// Set the rotation so that the character faces his direction of travel.
-	if (Attacking) {
+	if (Attacking && !Dodging) {
 		return;
 	}
 	if (Controller != nullptr)
