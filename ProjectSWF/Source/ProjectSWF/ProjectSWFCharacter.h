@@ -91,5 +91,8 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool Dodging = false;
 
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		int NumDodge = 1;
+
 	float CountSeconds = 0;
 };

@@ -135,7 +135,11 @@ void AProjectSWFCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
-
+	if (NumDodge == 0) {
+		if (GetCharacterMovement()->IsFalling() == false) {
+			NumDodge = 1;
+		}
+	}
 
 	UpdateCharacter();	
 }
