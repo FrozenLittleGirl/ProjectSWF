@@ -8,6 +8,7 @@
 
 class UTextRenderComponent;
 class UCapsuleComponent;
+class UStatusComponent;
 
 /**
  * This class is the default character for ProjectSWF, and it is responsible for all
@@ -101,6 +102,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = Setup)
 		int32 MaxNumDodge = 1;
 
+	UPROPERTY(EditAnywhere, Category = Setup)
+		int32 Health = 5;
+
+	UPROPERTY(EditAnywhere, Category = Setup)
+		int32 BasicDamage = 1;
+
+	UStatusComponent* Status;
 	UCapsuleComponent* HitBox = nullptr;
 
 	float CountSeconds = 0;
