@@ -7,6 +7,7 @@
 #include "ProjectSWFCharacter.generated.h"
 
 class UTextRenderComponent;
+class UCapsuleComponent;
 
 /**
  * This class is the default character for ProjectSWF, and it is responsible for all
@@ -64,6 +65,7 @@ protected:
 	// Attacking Actions
 	void BasicAttacking();
 
+	// This also update collision box position
 	void UpdateCharacter();
 
 	/** Handle touch inputs. */
@@ -85,6 +87,8 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 private:
+	//------- Variables ---------
+
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool Attacking = false;
 
@@ -92,7 +96,17 @@ private:
 		bool Dodging = false;
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		int NumDodge = 1;
+		int32 NumDodge = 1;
+
+	UPROPERTY(EditAnywhere, Category = Setup)
+		int32 MaxNumDodge = 1;
+
+	UCapsuleComponent* HitBox = nullptr;
 
 	float CountSeconds = 0;
+
+	//------- Functions ---------
+
+	UFUNCTION(BlueprintCallable, Category = Collision)
+		void AttachCollision(UCapsuleComponent* CollisionBox);
 };

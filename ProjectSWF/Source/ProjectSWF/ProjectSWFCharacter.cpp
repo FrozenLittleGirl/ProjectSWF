@@ -137,7 +137,7 @@ void AProjectSWFCharacter::Tick(float DeltaSeconds)
 	
 	if (NumDodge == 0) {
 		if (GetCharacterMovement()->IsFalling() == false) {
-			NumDodge = 1;
+			NumDodge = MaxNumDodge;
 		}
 	}
 
@@ -208,4 +208,8 @@ void AProjectSWFCharacter::UpdateCharacter()
 			Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
 		}
 	}
+}
+
+void AProjectSWFCharacter::AttachCollision(UCapsuleComponent* CollisionBox) {
+	HitBox = CollisionBox;
 }
