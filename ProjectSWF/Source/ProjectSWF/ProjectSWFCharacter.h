@@ -108,13 +108,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = Setup)
 		int32 BasicDamage = 1;
 
+	UPrimitiveComponent* HitBox;
 	UStatusComponent* Status;
-	UCapsuleComponent* HitBox = nullptr;
+	UCapsuleComponent* HurtBox = nullptr;
 
 	float CountSeconds = 0;
 
 	//------- Functions ---------
 
 	UFUNCTION(BlueprintCallable, Category = Collision)
-		void AttachCollision(UCapsuleComponent* CollisionBox);
+		void AttachCollision(UCapsuleComponent* CollisionBox, UPrimitiveComponent* NewHitBox);
 };

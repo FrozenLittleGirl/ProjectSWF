@@ -173,8 +173,12 @@ void AProjectSWFCharacter::MoveRight(float Value)
 }
 
 void AProjectSWFCharacter::BasicAttacking() {
-	Attacking = true;
-	CountSeconds = GetWorld()->GetTimeSeconds();
+	TArray<UPrimitiveComponent*> OutComponent;
+	HurtBox->GetOverlappingComponents(OutComponent);
+	for (auto Component : OutComponent) {
+		auto name = Component->GetOwner()->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("%s is hit"), *name);
+	}
 }
 
 void AProjectSWFCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
@@ -214,6 +218,7 @@ void AProjectSWFCharacter::UpdateCharacter()
 	}
 }
 
-void AProjectSWFCharacter::AttachCollision(UCapsuleComponent* CollisionBox) {
-	HitBox = CollisionBox;
+void AProjectSWFCharacter::AttachCollision(UCapsuleComponent* CollisionBox, UPrimitiveComponent* NewHitBox) {
+	HurtBox = CollisionBox;
+	HitBox = NewHitBox;
 }
