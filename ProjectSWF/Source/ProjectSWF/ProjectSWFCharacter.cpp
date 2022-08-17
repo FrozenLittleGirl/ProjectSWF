@@ -10,6 +10,7 @@
 #include "GameFramework/Controller.h"
 #include "Camera/CameraComponent.h"
 #include "Public/StatusComponent.h"
+#include "../Public/HitBoxActor.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -173,12 +174,8 @@ void AProjectSWFCharacter::MoveRight(float Value)
 }
 
 void AProjectSWFCharacter::BasicAttacking() {
-	TArray<UPrimitiveComponent*> OutComponent;
-	HurtBox->GetOverlappingComponents(OutComponent);
-	for (auto Component : OutComponent) {
-		auto name = Component->GetOwner()->GetName();
-		UE_LOG(LogTemp, Warning, TEXT("%s is hit"), *name);
-	}
+	
+
 }
 
 void AProjectSWFCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
@@ -218,7 +215,10 @@ void AProjectSWFCharacter::UpdateCharacter()
 	}
 }
 
-void AProjectSWFCharacter::AttachCollision(UCapsuleComponent* CollisionBox, UPrimitiveComponent* NewHitBox) {
-	HurtBox = CollisionBox;
-	HitBox = NewHitBox;
+void AProjectSWFCharacter::SpawnHitBox() {
+	auto HitBox = GetWorld()->SpawnActor<AHitBoxActor>(
+		HitBoxBluePrint,
+		GetTargetLocation(),
+		FRotator{0, 0, 0}
+	);
 }

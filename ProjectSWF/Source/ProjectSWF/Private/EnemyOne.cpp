@@ -28,13 +28,6 @@ void AEnemyOne::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void AEnemyOne::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
-void AEnemyOne::AttachCollision(UCapsuleComponent* CollisionBox) {
-	HurtBox = CollisionBox;
+void AEnemyOne::TakingDamage() {
+	UE_LOG(LogTemp, Warning, TEXT("%s is taking damage"), *(GetName()));
 }

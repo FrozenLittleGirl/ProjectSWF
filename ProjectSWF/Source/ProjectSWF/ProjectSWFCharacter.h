@@ -9,6 +9,7 @@
 class UTextRenderComponent;
 class UCapsuleComponent;
 class UStatusComponent;
+class AHitBoxActor;
 
 /**
  * This class is the default character for ProjectSWF, and it is responsible for all
@@ -100,6 +101,9 @@ private:
 		int32 NumDodge = 1;
 
 	UPROPERTY(EditAnywhere, Category = Setup)
+		TSubclassOf<AHitBoxActor> HitBoxBluePrint;
+
+	UPROPERTY(EditAnywhere, Category = Setup)
 		int32 MaxNumDodge = 1;
 
 	UPROPERTY(EditAnywhere, Category = Setup)
@@ -108,14 +112,15 @@ private:
 	UPROPERTY(EditAnywhere, Category = Setup)
 		int32 BasicDamage = 1;
 
-	UPrimitiveComponent* HitBox;
 	UStatusComponent* Status;
-	UCapsuleComponent* HurtBox = nullptr;
 
 	float CountSeconds = 0;
 
 	//------- Functions ---------
+	// Generate the hit box
+	UFUNCTION(BlueprintCallable, Category = "Hit")
+		void SpawnHitBox();
 
-	UFUNCTION(BlueprintCallable, Category = Collision)
-		void AttachCollision(UCapsuleComponent* CollisionBox, UPrimitiveComponent* NewHitBox);
+	// destroy the hit box
+
 };

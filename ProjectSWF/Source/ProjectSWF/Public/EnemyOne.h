@@ -26,9 +26,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 private:
 	UPROPERTY(EditAnywhere, Category = Setup)
 		int32 Health = 5;
@@ -36,9 +33,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = Setup)
 		int32 BasicDamage = 1;
 
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+		void TakingDamage();
+	
 	UStatusComponent* Status;
-	UCapsuleComponent* HurtBox;
-
-	UFUNCTION(BlueprintCallable)
-		void AttachCollision(UCapsuleComponent* CollisionBox);
 };
