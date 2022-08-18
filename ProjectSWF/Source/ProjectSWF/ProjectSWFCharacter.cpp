@@ -216,9 +216,13 @@ void AProjectSWFCharacter::UpdateCharacter()
 }
 
 void AProjectSWFCharacter::SpawnHitBox() {
+	FRotator Rotation = FRotator{ 0,0,0 };
+	if (GetActorRotation().Yaw != 0) {
+		Rotation = FRotator{ 0,180,0 };
+	}
 	auto HitBox = GetWorld()->SpawnActor<AHitBoxActor>(
 		HitBoxBluePrint,
 		GetTargetLocation(),
-		FRotator{0, 0, 0}
+		Rotation
 	);
 }
