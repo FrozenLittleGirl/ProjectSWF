@@ -65,6 +65,12 @@ void AEnemy02::Walk() {
 	}
 
 	this->AddMovementInput(FVector{ 1,0,0 }, Direction * WalkVelocity);
+	if (Direction == 1) {
+		this->SetActorRotation(FRotator(0, 0, 0));
+	}
+	else {
+		this->SetActorRotation(FRotator(0, 180, 0));
+	}
 }
 
 void AEnemy02::ReverseDirection() {
@@ -82,6 +88,7 @@ bool AEnemy02::ReturnPlayerSpotted() {
 
 void AEnemy02::WalkTowardsPlayer() {
 	PlayerSpotted = true;
+	Halt = false;
 	UE_LOG(LogTemp, Warning, TEXT("%s: Player Spotted!"), *(GetName()));
 }
 
