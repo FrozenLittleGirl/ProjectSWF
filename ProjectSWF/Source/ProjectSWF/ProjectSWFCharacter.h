@@ -112,6 +112,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Setup)
 		int32 BasicDamage = 1;
 
+	UPROPERTY(EditAnywhere, Category = Setup)
+		float PlayerRadius = 5;
+
 	UStatusComponent* Status;
 
 	float CountSeconds = 0;
@@ -122,5 +125,10 @@ private:
 		void SpawnHitBox();
 
 	// destroy the hit box
+
+public:
+	// return the radius of player
+	UFUNCTION(BlueprintCallable, Category = "Player")
+		float ReturnPlayerRadius();
 
 };

@@ -3,20 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
-#include "EnemyOne.generated.h"
+#include "GameFramework/Character.h"
+#include "Enemy02.generated.h"
 
 class UStatusComponent;
-class UCapsuleComponent;
 
 UCLASS()
-class PROJECTSWF_API AEnemyOne : public APawn
+class PROJECTSWF_API AEnemy02 : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
-	AEnemyOne();
+	// Sets default values for this character's properties
+	AEnemy02();
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,6 +24,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+		bool ReturnPlayerSpotted();
 
 	void Walk();
 
@@ -44,11 +49,8 @@ private:
 	int Direction = 1;
 
 	bool PlayerSpotted = false;
-	
-	UStatusComponent* Status;
 
-	UFUNCTION(BlueprintCallable, Category = "Player")
-		bool ReturnPlayerSpotted();
+	UStatusComponent* Status;
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		void ReverseDirection();
@@ -64,4 +66,11 @@ private:
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		void MakeHalt();
+
+	// Attack Player
+	UFUNCTION(BlueprintCallable, Category = "Action")
+		void WalkTowardsPlayer();
+
+	UFUNCTION(BlueprintCallable, Category = "Action")
+		void LoseTrackOfPlayer();
 };
