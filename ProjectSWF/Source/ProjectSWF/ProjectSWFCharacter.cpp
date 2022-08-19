@@ -226,7 +226,3 @@ void AProjectSWFCharacter::SpawnHitBox() {
 		Rotation
 	);
 }
-
-float AProjectSWFCharacter::ReturnPlayerRadius() {
-	return PlayerRadius;
-}

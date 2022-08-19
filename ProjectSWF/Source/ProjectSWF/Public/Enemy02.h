@@ -68,6 +68,9 @@ private:
 		void MakeHalt();
 
 	// Attack Player
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		float DistancePlayer = 140;
+
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		void WalkTowardsPlayer();
 

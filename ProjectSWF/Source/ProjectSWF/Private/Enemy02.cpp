@@ -35,7 +35,7 @@ void AEnemy02::Tick(float DeltaTime)
 		else {
 			Direction = 1;
 		}
-		if (Player->ReturnPlayerRadius() < abs(interval)) {
+		if (DistancePlayer < abs(interval)) {
 			Walk();
 		}
 	}

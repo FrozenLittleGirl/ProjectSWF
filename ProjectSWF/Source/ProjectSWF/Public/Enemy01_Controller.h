@@ -13,17 +13,4 @@ UCLASS()
 class PROJECTSWF_API AEnemy01_Controller : public AAIController
 {
 	GENERATED_BODY()
-
-public:
-	// Called every frame
-	void Tick(float DeltaTime) override;
-	
-	UFUNCTION(BlueprintCallable, Category = "Action")
-		void WalkTowardsPlayer();
-
-	UFUNCTION(BlueprintCallable, Category = "Player")
-		bool ReturnPlayerSpotted();
-
-private:
-	bool PlayerSpotted = false;
 };
