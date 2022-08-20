@@ -10,7 +10,6 @@ AEnemyOne::AEnemyOne()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Status = CreateDefaultSubobject<UStatusComponent>(TEXT("Status"));
-	Status->SetupVariables(false, Health, BasicDamage);
 }
 
 // Called when the game starts or when spawned

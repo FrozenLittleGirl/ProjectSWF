@@ -45,7 +45,7 @@ private:
 
 	bool PlayerSpotted = false;
 	
-	UStatusComponent* Status;
+	UStatusComponent* Status = nullptr;
 
 	UFUNCTION(BlueprintCallable, Category = "Player")
 		bool ReturnPlayerSpotted();

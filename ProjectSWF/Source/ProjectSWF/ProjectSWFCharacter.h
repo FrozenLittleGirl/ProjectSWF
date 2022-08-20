@@ -7,7 +7,6 @@
 #include "ProjectSWFCharacter.generated.h"
 
 class UTextRenderComponent;
-class UCapsuleComponent;
 class UStatusComponent;
 class AHitBoxActor;
 
@@ -88,6 +87,9 @@ public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+		void TakeDamage(int32 Damage);
+
 private:
 	//------- Variables ---------
 
@@ -106,21 +108,35 @@ private:
 	UPROPERTY(EditAnywhere, Category = Setup)
 		int32 MaxNumDodge = 1;
 
-	UPROPERTY(EditAnywhere, Category = Setup)
-		int32 Health = 5;
-
-	UPROPERTY(EditAnywhere, Category = Setup)
-		int32 BasicDamage = 1;
-
-	UStatusComponent* Status;
-
 	float CountSeconds = 0;
+
+	UStatusComponent* Status = nullptr;
 
 	//------- Functions ---------
 	// Generate the hit box
 	UFUNCTION(BlueprintCallable, Category = "Hit")
-		void SpawnHitBox();
+		void SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius);
 
-	// destroy the hit box
+	// Attach Status from the bluepirnt
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+		void AttachStatus(UStatusComponent* NewStatus);
 
+	// Basic Attack Setup
+	UPROPERTY(EditAnywhere, Category = "BasicAttack")
+		float BasicAttackActivateTime = 0.26;
+
+	UPROPERTY(EditAnywhere, Category = "BasicAttack")
+		float BasicAttackRadius = 39.1;
+
+	UPROPERTY(EditAnywhere, Category = "BasicAttack")
+		float BasicAttackHight = 84.6;
+
+	UPROPERTY(EditAnywhere, Category = "BasicAttack")
+		FVector BasicAttackSpawnLocation = { 56.69, 0, -11 };
+
+	UPROPERTY(EditAnywhere, Category = "BasicAttack")
+		FRotator BasicAttackSpawnRotation = { 0, -90, 0 };
+
+	UFUNCTION(BlueprintCallable, Category = "BasicAttack")
+		void SpawnBasicAttack();
 };

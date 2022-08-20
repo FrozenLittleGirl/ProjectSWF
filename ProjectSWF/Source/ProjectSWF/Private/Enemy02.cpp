@@ -2,6 +2,7 @@
 
 #include "../Public/StatusComponent.h"
 #include "../ProjectSWFCharacter.h"
+#include "../Public/HitBoxActor.h"
 #include "Enemy02.h"
 
 // Sets default values
@@ -10,8 +11,6 @@ AEnemy02::AEnemy02()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Status = CreateDefaultSubobject<UStatusComponent>(TEXT("Status"));
-	Status->SetupVariables(false, Health, BasicDamage);
 }
 
 // Called when the game starts or when spawned
@@ -35,8 +34,21 @@ void AEnemy02::Tick(float DeltaTime)
 		else {
 			Direction = 1;
 		}
+
+		// Try to attack or approach player
 		if (DistancePlayer < abs(interval)) {
 			Walk();
+		} 
+		else {
+			// see if enemy is attacking or is trying to attack
+			if (Attacking) {
+				if ((FPlatformTime::Seconds() - LastAttack) >= BasicAttackInterval) {
+					Attacking = false;
+				}
+			}
+			else {
+				BasicAttack();
+			}
 		}
 	}
 	else {
@@ -51,8 +63,9 @@ void AEnemy02::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AEnemy02::TakingDamage() {
-	UE_LOG(LogTemp, Warning, TEXT("%s is taking damage"), *(GetName()));
+void AEnemy02::TakeDamage(int32 Damage) {
+	UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
+	Status->TakeDamage(Damage);
 }
 
 void AEnemy02::Walk() {	
@@ -96,4 +109,38 @@ void AEnemy02::LoseTrackOfPlayer() {
 	UE_LOG(LogTemp, Warning, TEXT("%s: Lose Track of Player!"), *(GetName()));
 	PlayerSpotted = false;
 	MakeHalt();
+}
+
+void AEnemy02::AttachStatus(UStatusComponent* NewStatus) {
+	Status = NewStatus;
+}
+
+void AEnemy02::SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius) {
+	FRotator ActorRotation = FRotator{ 0,0,0 };
+	if (GetActorRotation().Yaw != 0) {
+		ActorRotation = FRotator{ 0,180,0 };
+	}
+	auto HitBox = GetWorld()->SpawnActor<AHitBoxActor>(
+		HitBoxBluePrint,
+		GetTargetLocation(),
+		ActorRotation
+		);
+	HitBox->StoreValues(Damage, Time);
+	HitBox->InitializeHitBox(Location, Rotation, CapsuleHight, CapsuleRadius);
+}
+
+void AEnemy02::SpawnBasicAttack() {
+	SpawnHitBox(Status->ReturnBasicDamage(), BasicAttackActivateTime, BasicAttackSpawnLocation,
+		BasicAttackSpawnRotation, BasicAttackHight, BasicAttackRadius);
+}
+
+void AEnemy02::BasicAttack() {
+	if (Attacking) {
+		return;
+	} else {
+		Attacking = true;
+		LastAttack = FPlatformTime::Seconds();
+	}
+
+	SpawnBasicAttack();
 }

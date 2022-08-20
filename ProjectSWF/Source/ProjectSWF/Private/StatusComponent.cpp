@@ -2,7 +2,6 @@
 
 
 #include "StatusComponent.h"
-#include "Components/CapsuleComponent.h"
 
 // Sets default values for this component's properties
 UStatusComponent::UStatusComponent()
@@ -31,12 +30,10 @@ void UStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-bool UStatusComponent::CheckBeingAttacked(UCapsuleComponent* MyCollision) {
-	return false;
+int32 UStatusComponent::ReturnBasicDamage() {
+	return BasicDamage;
 }
 
-void UStatusComponent::SetupVariables(bool IsAPlayerToSet, int32 HealthToSet, int32 BasicDamageToSet) {
-	IsAPlayer = IsAPlayerToSet;
-	Health = HealthToSet;
-	BasicDamage = BasicDamageToSet;
+void UStatusComponent::TakeDamage(int32 Damage) {
+	Health = Health - Damage;
 }

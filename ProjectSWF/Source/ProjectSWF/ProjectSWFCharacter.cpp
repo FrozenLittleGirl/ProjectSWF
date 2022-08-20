@@ -19,9 +19,6 @@ DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
 AProjectSWFCharacter::AProjectSWFCharacter()
 {
-	Status = CreateDefaultSubobject<UStatusComponent>(TEXT("Status"));
-	Status->SetupVariables(true, Health, BasicDamage);
-
 	// Use only Yaw from the controller and ignore the rest of the rotation.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
@@ -215,14 +212,30 @@ void AProjectSWFCharacter::UpdateCharacter()
 	}
 }
 
-void AProjectSWFCharacter::SpawnHitBox() {
-	FRotator Rotation = FRotator{ 0,0,0 };
+void AProjectSWFCharacter::SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius) {
+	FRotator ActorRotation = FRotator{ 0,0,0 };
 	if (GetActorRotation().Yaw != 0) {
-		Rotation = FRotator{ 0,180,0 };
+		ActorRotation = FRotator{ 0,180,0 };
 	}
 	auto HitBox = GetWorld()->SpawnActor<AHitBoxActor>(
 		HitBoxBluePrint,
 		GetTargetLocation(),
-		Rotation
+		ActorRotation
 	);
+	HitBox->StoreValues(Damage, Time);
+	HitBox->InitializeHitBox(Location, Rotation, CapsuleHight, CapsuleRadius);
+}
+
+void AProjectSWFCharacter::SpawnBasicAttack() {
+	SpawnHitBox(Status->ReturnBasicDamage(), BasicAttackActivateTime, BasicAttackSpawnLocation,
+		BasicAttackSpawnRotation, BasicAttackHight, BasicAttackRadius);
+}
+
+void AProjectSWFCharacter::AttachStatus(UStatusComponent* NewStatus) {
+	Status = NewStatus;
+}
+
+void AProjectSWFCharacter::TakeDamage(int32 Damage) {
+	UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
+	Status->TakeDamage(Damage);
 }

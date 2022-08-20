@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "StatusComponent.generated.h"
 
-class UCapsuleComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTSWF_API UStatusComponent : public UActorComponent
@@ -25,19 +24,23 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// Check if the current pawn is hit by other
-	bool CheckBeingAttacked(UCapsuleComponent* MyCollision);
-
-	// Setup values for health etc
-	void SetupVariables(bool IsAPlayer, int32 Health, int32 BasicDamage);
-
 private:
-	bool IsAPlayer = true;
-	int32 Health = 10;
-	int32 BasicDamage = 1;
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		int32 Health = 5;
+
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		int32 BasicDamage = 1;
+
 	bool Died = false;
 
 	// Functions
 
-		
+public:
+	// Return Basic Damage
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+		int32 ReturnBasicDamage();
+
+	// substract health by given damage
+	void TakeDamage(int32 Damage);
+	
 };
