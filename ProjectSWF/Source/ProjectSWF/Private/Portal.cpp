@@ -25,6 +25,6 @@ void APortal::Tick(float DeltaTime)
 
 }
 
-TAssetPtr<UWorld> APortal::ProvideLevel() {
+FName APortal::ProvideLevel() {
 	return Level;
 }

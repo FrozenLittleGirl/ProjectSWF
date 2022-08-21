@@ -222,6 +222,8 @@ void AProjectSWFCharacter::SpawnHitBox(int32 Damage, float Time, FVector Locatio
 		GetTargetLocation(),
 		ActorRotation
 	);
+
+	HitBox->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 	HitBox->StoreValues(Damage, Time);
 	HitBox->InitializeHitBox(Location, Rotation, CapsuleHight, CapsuleRadius);
 }

@@ -11,6 +11,7 @@ AEnemy02::AEnemy02()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//this->MoveIgnoreActorAdd(this);
 }
 
 // Called when the game starts or when spawned
@@ -125,6 +126,8 @@ void AEnemy02::SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator 
 		GetTargetLocation(),
 		ActorRotation
 		);
+
+	HitBox->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 	HitBox->StoreValues(Damage, Time);
 	HitBox->InitializeHitBox(Location, Rotation, CapsuleHight, CapsuleRadius);
 }

@@ -25,8 +25,8 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Category = Setup)
-		TAssetPtr<UWorld> Level = nullptr;
+		FName Level = "Village_Level";
 
 	UFUNCTION(BlueprintCallable, Category = "Variables")
-		TAssetPtr<UWorld> ProvideLevel();
+		FName ProvideLevel();
 };
