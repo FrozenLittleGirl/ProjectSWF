@@ -79,7 +79,7 @@ void AEnemy02::Walk() {
 	}
 
 	this->AddMovementInput(FVector{ 1,0,0 }, Direction * WalkVelocity);
-	if (Direction == 1) {
+	if (Direction >= 0) {
 		this->SetActorRotation(FRotator(0, 0, 0));
 	}
 	else {

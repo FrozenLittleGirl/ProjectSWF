@@ -34,10 +34,11 @@ public:
 
 private:
 
-	UPROPERTY(EditAnywhere, Category = Setup)
+	UPROPERTY(EditAnywhere, Category = "Setup")
 		float WalkVelocity = 1;
 
-	int Direction = 1;
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		int32 Direction = 1;
 
 	bool PlayerSpotted = false;
 
