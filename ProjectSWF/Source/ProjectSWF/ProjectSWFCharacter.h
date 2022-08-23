@@ -57,6 +57,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 		class UPaperFlipbook* DodgeAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+		class UPaperFlipbook* DiedAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+		class UPaperFlipbook* DiedLoopAnimation;
+
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
@@ -90,6 +96,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		void TakeDamage(int32 Damage);
 
+	UFUNCTION(BlueprintCallable, Category = "Player")
+		void ResetLastLevel(FName Level);
+
 private:
 	//------- Variables ---------
 
@@ -109,6 +118,10 @@ private:
 		int32 MaxNumDodge = 1;
 
 	float CountSeconds = 0;
+
+	bool Dying = false;
+
+	FName LastLevel = "DevTest_Level";
 
 	UStatusComponent* Status = nullptr;
 

@@ -32,6 +32,7 @@ private:
 		int32 BasicDamage = 1;
 
 	bool Died = false;
+	float DyingCount = 0;
 
 	// Functions
 
@@ -40,7 +41,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		int32 ReturnBasicDamage();
 
+	// return current health
+	UFUNCTION(BlueprintCallable, Category = "CurrentStatus")
+		int32 ReturnHealth();
+
+	// return true if the actor is died and false otherwise
+	UFUNCTION(BlueprintCallable, Category = "CurrentStatus")
+		bool DiedOrNot();
+
 	// substract health by given damage
 	void TakeDamage(int32 Damage);
+
+	float ReturnDyingCount();
 	
 };

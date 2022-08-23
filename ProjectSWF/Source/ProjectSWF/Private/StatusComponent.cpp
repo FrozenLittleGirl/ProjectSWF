@@ -36,4 +36,20 @@ int32 UStatusComponent::ReturnBasicDamage() {
 
 void UStatusComponent::TakeDamage(int32 Damage) {
 	Health = Health - Damage;
+	if (Health <= 0) {
+		Died = true;
+		DyingCount = FPlatformTime::Seconds();
+	}
+}
+
+int32 UStatusComponent::ReturnHealth() {
+	return Health;
+}
+
+bool UStatusComponent::DiedOrNot() {
+	return Died;
+}
+
+float UStatusComponent::ReturnDyingCount() {
+	return DyingCount;
 }

@@ -10,6 +10,7 @@
 #include "GameFramework/Controller.h"
 #include "Camera/CameraComponent.h"
 #include "Public/StatusComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "../Public/HitBoxActor.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
@@ -136,7 +137,15 @@ void AProjectSWFCharacter::UpdateAnimation()
 void AProjectSWFCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
+
+	if (Status->DiedOrNot()) {
+		GetSprite()->SetFlipbook(DiedAnimation);
+		if ((FPlatformTime::Seconds() - Status->ReturnDyingCount()) >= 0.34) {
+			UGameplayStatics::OpenLevel(GetWorld(), LastLevel);
+		}
+		return;
+	}
+
 	if (NumDodge == 0) {
 		if (GetCharacterMovement()->IsFalling() == false) {
 			NumDodge = MaxNumDodge;
@@ -240,4 +249,8 @@ void AProjectSWFCharacter::AttachStatus(UStatusComponent* NewStatus) {
 void AProjectSWFCharacter::TakeDamage(int32 Damage) {
 	UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
 	Status->TakeDamage(Damage);
+}
+
+void AProjectSWFCharacter::ResetLastLevel(FName Level) {
+	LastLevel = Level;
 }
