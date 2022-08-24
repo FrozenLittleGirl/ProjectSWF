@@ -17,17 +17,23 @@ public:
 	// Sets default values for this actor's properties
 	AHitBoxActor();
 
-	UFUNCTION(BlueprintCallable, Category = "Return")
-		int32 ReturnDamage();
-
-	UFUNCTION(BlueprintCallable, Category = "Return")
-		float ReturnPersistTime();
-
 	void StoreValues(int32 DamageAmount, float Time);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Values")
+		int32 Damage = 1;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Values")
+		float PersistTime = 0.26;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Values")
+		int32 Direction = 1;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Values")
+		FVector Force = { 450, 0, 0 };
 
 public:	
 	// Called every frame
@@ -39,12 +45,6 @@ public:
 
 private:
 	UCapsuleComponent* HitBox = nullptr;
-
-	int32 Damage = 1;
-	float PersistTime = 0.26;
-
-	int32 Direction = 1;
-	FVector Force = { 450, 0, 0 };
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 		void AttachHitBox(UCapsuleComponent* Box);

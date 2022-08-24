@@ -30,7 +30,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
-		void TakeDamage(int32 Damage);
+		void TakeDamage(int32 Damage, int32 ForceDirection);
 
 private:
 
