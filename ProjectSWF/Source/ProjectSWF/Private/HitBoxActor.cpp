@@ -26,14 +26,6 @@ void AHitBoxActor::Tick(float DeltaTime)
 
 }
 
-int32 AHitBoxActor::ReturnDamage() {
-	return Damage;
-}
-
-float AHitBoxActor::ReturnPersistTime() {
-	return PersistTime;
-}
-
 void AHitBoxActor::StoreValues(int32 DamageAmount, float Time) {
 	Damage = DamageAmount;
 	PersistTime = Time;
