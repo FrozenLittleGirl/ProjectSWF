@@ -26,8 +26,10 @@ void AEnemy02::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (Player->DiedOrNot()) { return; }
+
 	if (PlayerSpotted) {
-		auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 		float interval = Player->GetTargetLocation().X - GetTargetLocation().X;
 		if (interval < 0) {
 			Direction = -1;
@@ -67,6 +69,12 @@ void AEnemy02::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemy02::TakeDamage(int32 Damage) {
 	UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
 	Status->TakeDamage(Damage);
+	auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	FVector Force = Player->ReturnPlayerForce();
+	if (Player->GetTargetLocation().X - GetTargetLocation().X >= 0) {
+		Force.X = Force.X * -1;
+	}
+	LaunchCharacter(Force, true, true);
 }
 
 void AEnemy02::Walk() {	

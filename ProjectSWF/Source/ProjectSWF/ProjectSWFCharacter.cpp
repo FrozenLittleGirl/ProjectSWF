@@ -138,14 +138,25 @@ void AProjectSWFCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	// totally died
+	if (TotallyDied) { return; }
+
+	// update death animation
 	if (Status->DiedOrNot()) {
-		GetSprite()->SetFlipbook(DiedAnimation);
+		auto Animation = DiedAnimation;
 		if ((FPlatformTime::Seconds() - Status->ReturnDyingCount()) >= 0.34) {
-			UGameplayStatics::OpenLevel(GetWorld(), LastLevel);
+			TotallyDied = true;
+			Animation = DiedLoopAnimation;
+		}
+
+		if (GetSprite()->GetFlipbook() != Animation)
+		{
+			GetSprite()->SetFlipbook(Animation);
 		}
 		return;
 	}
 
+	// other
 	if (NumDodge == 0) {
 		if (GetCharacterMovement()->IsFalling() == false) {
 			NumDodge = MaxNumDodge;
@@ -165,6 +176,7 @@ void AProjectSWFCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAction("BasicAttack", IE_Pressed, this, &AProjectSWFCharacter::BasicAttacking);
+	PlayerInputComponent->BindAction("Revive", IE_Pressed, this, &AProjectSWFCharacter::Revive);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AProjectSWFCharacter::MoveRight);
 
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AProjectSWFCharacter::TouchStarted);
@@ -184,14 +196,24 @@ void AProjectSWFCharacter::BasicAttacking() {
 
 }
 
+void AProjectSWFCharacter::Revive() {
+	if (TotallyDied) {
+		UGameplayStatics::OpenLevel(GetWorld(), LastLevel);
+	}
+}
+
 void AProjectSWFCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
+	if (Dodging) { return; }
+
 	// Jump on any touch
 	Jump();
 }
 
 void AProjectSWFCharacter::TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
+	if (Dodging) { return; }
+
 	// Cease jumping once touch stopped
 	StopJumping();
 }
@@ -253,4 +275,12 @@ void AProjectSWFCharacter::TakeDamage(int32 Damage) {
 
 void AProjectSWFCharacter::ResetLastLevel(FName Level) {
 	LastLevel = Level;
+}
+
+FVector AProjectSWFCharacter::ReturnPlayerForce() {
+	return PlayerForce;
+}
+
+bool AProjectSWFCharacter::DiedOrNot() {
+	return Status->DiedOrNot();
 }

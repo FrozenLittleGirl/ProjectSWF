@@ -72,6 +72,9 @@ protected:
 	// Attacking Actions
 	void BasicAttacking();
 
+	// Respawn Player
+	void Revive();
+
 	// This also update collision box position
 	void UpdateCharacter();
 
@@ -99,6 +102,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Player")
 		void ResetLastLevel(FName Level);
 
+	FVector ReturnPlayerForce();
+
+	bool DiedOrNot();
+
 private:
 	//------- Variables ---------
 
@@ -111,15 +118,19 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		int32 NumDodge = 1;
 
-	UPROPERTY(EditAnywhere, Category = Setup)
+	UPROPERTY(EditAnywhere, Category = "Setup")
 		TSubclassOf<AHitBoxActor> HitBoxBluePrint;
 
-	UPROPERTY(EditAnywhere, Category = Setup)
+	UPROPERTY(EditAnywhere, Category = "Setup")
 		int32 MaxNumDodge = 1;
 
 	float CountSeconds = 0;
 
 	bool Dying = false;
+	bool TotallyDied = false;
+
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		FVector PlayerForce = { 10, 0, 0 };
 
 	FName LastLevel = "DevTest_Level";
 
@@ -134,7 +145,7 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 		void AttachStatus(UStatusComponent* NewStatus);
 
-	// Basic Attack Setup
+	//------- Basic Attack Setup ---------
 	UPROPERTY(EditAnywhere, Category = "BasicAttack")
 		float BasicAttackActivateTime = 0.26;
 
