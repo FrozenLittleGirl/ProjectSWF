@@ -147,7 +147,7 @@ private:
 
 	// return face direction
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		int32 FaceDirection();
+		int32 AttackDirection();
 
 	//------- Basic Attack Setup ---------
 	UPROPERTY(EditAnywhere, Category = "BasicAttack")

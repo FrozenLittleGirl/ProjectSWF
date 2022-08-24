@@ -286,7 +286,7 @@ bool AProjectSWFCharacter::DiedOrNot() {
 	return Status->DiedOrNot();
 }
 
-int32 AProjectSWFCharacter::FaceDirection() {
+int32 AProjectSWFCharacter::AttackDirection() {
 	int32 Direction;
 	int32 XDirection = GetCharacterMovement()->GetLastUpdateVelocity().X;
 	if (XDirection < 0) {
