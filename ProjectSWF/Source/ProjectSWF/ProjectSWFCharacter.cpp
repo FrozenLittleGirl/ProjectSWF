@@ -243,7 +243,7 @@ void AProjectSWFCharacter::UpdateCharacter()
 	}
 }
 
-void AProjectSWFCharacter::SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius) {
+void AProjectSWFCharacter::SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius, int32 Direction, FVector Force) {
 	FRotator ActorRotation = FRotator{ 0,0,0 };
 	if (GetActorRotation().Yaw != 0) {
 		ActorRotation = FRotator{ 0,180,0 };
@@ -257,11 +257,12 @@ void AProjectSWFCharacter::SpawnHitBox(int32 Damage, float Time, FVector Locatio
 	HitBox->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 	HitBox->StoreValues(Damage, Time);
 	HitBox->InitializeHitBox(Location, Rotation, CapsuleHight, CapsuleRadius);
+	HitBox->InitializeValues(Direction, Force);
 }
 
-void AProjectSWFCharacter::SpawnBasicAttack() {
+void AProjectSWFCharacter::SpawnBasicAttack(int32 Direction) {
 	SpawnHitBox(Status->ReturnBasicDamage(), BasicAttackActivateTime, BasicAttackSpawnLocation,
-		BasicAttackSpawnRotation, BasicAttackHight, BasicAttackRadius);
+		BasicAttackSpawnRotation, BasicAttackHight, BasicAttackRadius, Direction, PlayerForce);
 }
 
 void AProjectSWFCharacter::AttachStatus(UStatusComponent* NewStatus) {
@@ -283,4 +284,22 @@ FVector AProjectSWFCharacter::ReturnPlayerForce() {
 
 bool AProjectSWFCharacter::DiedOrNot() {
 	return Status->DiedOrNot();
+}
+
+int32 AProjectSWFCharacter::FaceDirection() {
+	int32 Direction;
+	int32 XDirection = GetCharacterMovement()->GetLastUpdateVelocity().X;
+	if (XDirection < 0) {
+		Direction = -1;
+	}
+	else if (XDirection > 0) {
+		Direction = 1;
+	}
+	else if (GetControlRotation().Yaw > 90) {
+		Direction = -1;
+	}
+	else {
+		Direction = 1;
+	}
+	return Direction;
 }

@@ -74,7 +74,7 @@ void AEnemy02::TakeDamage(int32 Damage) {
 	if (Player->GetTargetLocation().X - GetTargetLocation().X >= 0) {
 		Force.X = Force.X * -1;
 	}
-	LaunchCharacter(Force, true, true);
+	LaunchCharacter(Force, true, false);
 }
 
 void AEnemy02::Walk() {	

@@ -47,3 +47,8 @@ void AHitBoxActor::InitializeHitBox(FVector Location, FRotator Rotation, float H
 	HitBox->SetRelativeLocationAndRotation(Location, Rotation);
 	HitBox->SetCapsuleSize(Radius, Hight, true);
 }
+
+void AHitBoxActor::InitializeValues(int32 DirectionTo, FVector ForceTo) {
+	Direction = DirectionTo;
+	Force = ForceTo;
+}

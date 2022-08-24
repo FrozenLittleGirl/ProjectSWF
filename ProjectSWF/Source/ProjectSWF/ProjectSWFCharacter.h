@@ -139,11 +139,15 @@ private:
 	//------- Functions ---------
 	// Generate the hit box
 	UFUNCTION(BlueprintCallable, Category = "Hit")
-		void SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius);
+		void SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius, int32 Direction, FVector Force);
 
 	// Attach Status from the bluepirnt
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 		void AttachStatus(UStatusComponent* NewStatus);
+
+	// return face direction
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+		int32 FaceDirection();
 
 	//------- Basic Attack Setup ---------
 	UPROPERTY(EditAnywhere, Category = "BasicAttack")
@@ -162,5 +166,5 @@ private:
 		FRotator BasicAttackSpawnRotation = { 0, -90, 0 };
 
 	UFUNCTION(BlueprintCallable, Category = "BasicAttack")
-		void SpawnBasicAttack();
+		void SpawnBasicAttack(int32 Direction);
 };

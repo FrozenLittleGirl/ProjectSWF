@@ -35,11 +35,16 @@ public:
 
 	void InitializeHitBox(FVector Location, FRotator Rotation, float Hight, float Radius);
 
+	void InitializeValues(int32 DirectionTo, FVector ForceTo);
+
 private:
 	UCapsuleComponent* HitBox = nullptr;
 
 	int32 Damage = 1;
 	float PersistTime = 0.26;
+
+	int32 Direction = 1;
+	FVector Force = { 450, 0, 0 };
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 		void AttachHitBox(UCapsuleComponent* Box);
