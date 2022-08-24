@@ -97,7 +97,10 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
-		void TakeDamage(int32 Damage);
+		void TakeDamageNoDirection(int32 Damage);
+
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+		void TakeDamage(int32 Damage, int32 ForceDirection, FVector Force);
 
 	UFUNCTION(BlueprintCallable, Category = "Player")
 		void ResetLastLevel(FName Level);

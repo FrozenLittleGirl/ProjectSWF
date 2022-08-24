@@ -269,9 +269,22 @@ void AProjectSWFCharacter::AttachStatus(UStatusComponent* NewStatus) {
 	Status = NewStatus;
 }
 
-void AProjectSWFCharacter::TakeDamage(int32 Damage) {
+void AProjectSWFCharacter::TakeDamageNoDirection(int32 Damage) {
 	UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
 	Status->TakeDamage(Damage);
+}
+
+void AProjectSWFCharacter::TakeDamage(int32 Damage, int32 ForceDirection, FVector Force) {
+	//UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
+	Status->TakeDamage(Damage);
+	FVector NewForce = Force;
+	if (ForceDirection < 0) {
+		NewForce.X = -NewForce.X;
+	}
+	//UE_LOG(LogTemp, Warning, TEXT("Damage Direction: %s"), *(NewForce.ToString()));
+	//UE_LOG(LogTemp, Warning, TEXT("Damage Direction: %f"), -Force.X);
+	UE_LOG(LogTemp, Warning, TEXT("Damage Direction: %d"), ForceDirection);
+	LaunchCharacter(NewForce, true, false);
 }
 
 void AProjectSWFCharacter::ResetLastLevel(FName Level) {

@@ -30,7 +30,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
-		void TakeDamage(int32 Damage, int32 ForceDirection);
+		void TakeDamage(int32 Damage, int32 ForceDirection, FVector Force);
 
 private:
 
@@ -62,7 +62,7 @@ private:
 
 	// Generate the hit box
 	UFUNCTION(BlueprintCallable, Category = "Hit")
-		void SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius);
+		void SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius, int32 DirectionTo, FVector ForceTo);
 
 protected:
 	// General
@@ -87,7 +87,7 @@ protected:
 	void Walk();
 
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void BasicAttack();
+		void BasicAttack(int32 DirectionTo);
 
 	//------- Functions ---------
 	// Attach Status from the bluepirnt
@@ -115,8 +115,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "BasicAttack")
 		FRotator BasicAttackSpawnRotation = { 0, -90, 0 };
 
+	UPROPERTY(EditAnywhere, Category = "BasicAttack")
+		FVector BasicAttackForce = { 450, 0, 0 };
+
 	UFUNCTION(BlueprintCallable, Category = "BasicAttack")
-		void SpawnBasicAttack();
+		void SpawnBasicAttack(int32 DirectionTo);
 
 
 };

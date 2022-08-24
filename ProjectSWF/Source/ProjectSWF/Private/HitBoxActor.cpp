@@ -44,3 +44,19 @@ void AHitBoxActor::InitializeValues(int32 DirectionTo, FVector ForceTo) {
 	Direction = DirectionTo;
 	Force = ForceTo;
 }
+
+int32 AHitBoxActor::ReturnDirection() {
+	return Direction;
+}
+
+FVector AHitBoxActor::ReturnForce() {
+	return Force;
+}
+
+int32 AHitBoxActor::ReturnDamage() {
+	return Damage;
+}
+
+float AHitBoxActor::ReturnPersistTime() {
+	return PersistTime;
+}

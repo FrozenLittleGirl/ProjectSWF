@@ -50,7 +50,8 @@ void AEnemy02::Tick(float DeltaTime)
 				}
 			}
 			else {
-				BasicAttack();
+				//UE_LOG(LogTemp, Warning, TEXT("is attack direction: %d"), Direction);
+				BasicAttack(Direction);
 			}
 		}
 	}
@@ -66,13 +67,11 @@ void AEnemy02::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AEnemy02::TakeDamage(int32 Damage, int32 ForceDirection) {
-	UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
+void AEnemy02::TakeDamage(int32 Damage, int32 ForceDirection, FVector Force) {
+	//UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
 	Status->TakeDamage(Damage);
-	auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	FVector Force = Player->ReturnPlayerForce();
-	Force.X = Force.X * ForceDirection;
-	LaunchCharacter(Force, true, false);
+	FVector NewForce = {Force.X * ForceDirection, Force.Y, Force.Z};
+	LaunchCharacter(NewForce, true, false);
 }
 
 void AEnemy02::Walk() {	
@@ -122,7 +121,7 @@ void AEnemy02::AttachStatus(UStatusComponent* NewStatus) {
 	Status = NewStatus;
 }
 
-void AEnemy02::SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius) {
+void AEnemy02::SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius, int32 DirectionTo, FVector ForceTo) {
 	FRotator ActorRotation = FRotator{ 0,0,0 };
 	if (GetActorRotation().Yaw != 0) {
 		ActorRotation = FRotator{ 0,180,0 };
@@ -131,19 +130,20 @@ void AEnemy02::SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator 
 		HitBoxBluePrint,
 		GetTargetLocation(),
 		ActorRotation
-		);
+	);
 
 	HitBox->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 	HitBox->StoreValues(Damage, Time);
 	HitBox->InitializeHitBox(Location, Rotation, CapsuleHight, CapsuleRadius);
+	HitBox->InitializeValues(DirectionTo, ForceTo);
 }
 
-void AEnemy02::SpawnBasicAttack() {
+void AEnemy02::SpawnBasicAttack(int32 DirectionTo) {
 	SpawnHitBox(Status->ReturnBasicDamage(), BasicAttackActivateTime, BasicAttackSpawnLocation,
-		BasicAttackSpawnRotation, BasicAttackHight, BasicAttackRadius);
+		BasicAttackSpawnRotation, BasicAttackHight, BasicAttackRadius, DirectionTo, BasicAttackForce);
 }
 
-void AEnemy02::BasicAttack() {
+void AEnemy02::BasicAttack(int32 DirectionTo) {
 	if (Attacking) {
 		return;
 	} else {
@@ -151,5 +151,5 @@ void AEnemy02::BasicAttack() {
 		LastAttack = FPlatformTime::Seconds();
 	}
 
-	SpawnBasicAttack();
+	SpawnBasicAttack(DirectionTo);
 }

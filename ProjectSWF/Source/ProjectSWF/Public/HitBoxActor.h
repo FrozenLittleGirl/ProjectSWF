@@ -23,17 +23,31 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Values")
+	UPROPERTY(BlueprintReadOnly, Category = "Values")
 		int32 Damage = 1;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Values")
+	UPROPERTY(BlueprintReadOnly, Category = "Values")
 		float PersistTime = 0.26;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Values")
+	UPROPERTY(BlueprintReadOnly, Category = "Values")
 		int32 Direction = 1;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Values")
+	UPROPERTY(BlueprintReadOnly, Category = "Values")
 		FVector Force = { 450, 0, 0 };
+
+	//---- Functions ----
+
+	UFUNCTION(BlueprintCallable, Category = "Values")
+		int32 ReturnDirection();
+
+	UFUNCTION(BlueprintCallable, Category = "Values")
+		FVector ReturnForce();
+
+	UFUNCTION(BlueprintCallable, Category = "Values")
+		int32 ReturnDamage();
+
+	UFUNCTION(BlueprintCallable, Category = "Values")
+		float ReturnPersistTime();
 
 public:	
 	// Called every frame
