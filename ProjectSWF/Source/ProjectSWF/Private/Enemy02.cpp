@@ -28,6 +28,20 @@ void AEnemy02::Tick(float DeltaTime)
 	auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if (Player->DiedOrNot()) { return; }
 
+	if (Halt) {
+		if (FPlatformTime::Seconds() - LastHalt >= IndicatedHaltTime) {
+			Halt = false;
+		}
+		return;
+	}
+
+	if (Attacking) {
+		BasicAttack();
+		Attacking = false;
+		MakeHalt(0.26);
+		return;
+	}
+
 	if (PlayerSpotted) {
 		float interval = Player->GetTargetLocation().X - GetTargetLocation().X;
 		if (interval < 0) {
@@ -40,13 +54,10 @@ void AEnemy02::Tick(float DeltaTime)
 		// Try to attack or approach player
 		if (DistancePlayer < abs(interval)) {
 			Walk();
-		} 
+		}
 		else {
-			if (Attacking == false) {
-				LastAttack = FPlatformTime::Seconds();
-				Attacking = true;
-			}
-			BasicAttack();
+			Attacking = true;
+			MakeHalt(BasicAttackInterval);
 		}
 	}
 	else {
@@ -70,13 +81,6 @@ void AEnemy02::TakeDamage(int32 Damage, int32 ForceDirection, FVector Force) {
 
 void AEnemy02::Walk() {	
 	// Enemy will not halt if player is spotted
-	if (Halt) {
-		if ((FPlatformTime::Seconds() - LastHalt) >= HaltTime) {
-			Halt = false;
-		}
-		return;
-	}
-
 	Attacking = false;
 
 	this->AddMovementInput(FVector{ 1,0,0 }, Direction * WalkVelocity);
@@ -89,12 +93,14 @@ void AEnemy02::Walk() {
 }
 
 void AEnemy02::ReverseDirection() {
+	MakeHalt(HaltTime);
 	Direction = Direction * -1;
 }
 
-void AEnemy02::MakeHalt() {
-	LastHalt = FPlatformTime::Seconds();
+void AEnemy02::MakeHalt(float Seconds) {
 	Halt = true;
+	IndicatedHaltTime = Seconds;
+	LastHalt = FPlatformTime::Seconds();
 }
 
 bool AEnemy02::ReturnPlayerSpotted() {
@@ -110,7 +116,7 @@ void AEnemy02::PlayerDetected() {
 void AEnemy02::LoseTrackOfPlayer() {
 	UE_LOG(LogTemp, Warning, TEXT("%s: Lose Track of Player!"), *(GetName()));
 	PlayerSpotted = false;
-	MakeHalt();
+	MakeHalt(HaltTime);
 }
 
 void AEnemy02::AttachStatus(UStatusComponent* NewStatus) {
@@ -132,10 +138,6 @@ void AEnemy02::SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint) {
 }
 
 void AEnemy02::BasicAttack() {
-	if (Attacking == false || FPlatformTime::Seconds() - LastAttack < BasicAttackInterval) { 
-		return;
-	}
-
-	LastAttack = FPlatformTime::Seconds();
 	SpawnHitBox(HitBoxBluePrint);
+	AttakingTime = FPlatformTime::Seconds();
 }

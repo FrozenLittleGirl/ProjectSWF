@@ -52,6 +52,7 @@ protected:
 		float HaltTime = 2;
 
 	float LastHalt = 0;
+	float IndicatedHaltTime = 0;
 
 	bool Halt = false;
 
@@ -64,6 +65,7 @@ protected:
 
 	bool Attacking = false;
 	float LastAttack = 0;
+	float AttakingTime = 0;
 
 	// Generate the hit box
 	UFUNCTION(BlueprintCallable, Category = "Hit")
@@ -76,8 +78,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		void ReverseDirection();
 
+	// Make enemy stop
 	UFUNCTION(BlueprintCallable, Category = "Action")
-		void MakeHalt();
+		void MakeHalt(float Seconds);
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		void PlayerDetected();
