@@ -23,31 +23,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Values")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Values")
 		int32 Damage = 1;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Values")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Values")
 		float PersistTime = 0.26;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Values")
-		int32 Direction = 1;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Values")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Values")
 		FVector Force = { 450, 0, 0 };
 
-	//---- Functions ----
-
-	UFUNCTION(BlueprintCallable, Category = "Values")
-		int32 ReturnDirection();
-
-	UFUNCTION(BlueprintCallable, Category = "Values")
-		FVector ReturnForce();
-
-	UFUNCTION(BlueprintCallable, Category = "Values")
-		int32 ReturnDamage();
-
-	UFUNCTION(BlueprintCallable, Category = "Values")
-		float ReturnPersistTime();
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Values")
+		float ActivateTime = 0.26;
 
 public:	
 	// Called every frame
@@ -62,5 +48,8 @@ private:
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 		void AttachHitBox(UCapsuleComponent* Box);
+
+	UFUNCTION(BlueprintCallable, Category = "Values")
+		int32 ReturnDirection();
 
 };

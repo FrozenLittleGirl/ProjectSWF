@@ -10,8 +10,7 @@ AEnemy02::AEnemy02()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	//this->MoveIgnoreActorAdd(this);
+	//GetWorld()->GetTimerManager().SetTimer(AttackTimeHandle, this, &AEnemy02::BasicAttack, BasicAttackInterval, true, BasicAttackInterval);
 }
 
 // Called when the game starts or when spawned
@@ -43,16 +42,11 @@ void AEnemy02::Tick(float DeltaTime)
 			Walk();
 		} 
 		else {
-			// see if enemy is attacking or is trying to attack
-			if (Attacking) {
-				if ((FPlatformTime::Seconds() - LastAttack) >= BasicAttackInterval) {
-					Attacking = false;
-				}
+			if (Attacking == false) {
+				LastAttack = FPlatformTime::Seconds();
+				Attacking = true;
 			}
-			else {
-				//UE_LOG(LogTemp, Warning, TEXT("is attack direction: %d"), Direction);
-				BasicAttack(Direction);
-			}
+			BasicAttack();
 		}
 	}
 	else {
@@ -83,6 +77,8 @@ void AEnemy02::Walk() {
 		return;
 	}
 
+	Attacking = false;
+
 	this->AddMovementInput(FVector{ 1,0,0 }, Direction * WalkVelocity);
 	if (Direction >= 0) {
 		this->SetActorRotation(FRotator(0, 0, 0));
@@ -105,7 +101,7 @@ bool AEnemy02::ReturnPlayerSpotted() {
 	return PlayerSpotted;
 }
 
-void AEnemy02::WalkTowardsPlayer() {
+void AEnemy02::PlayerDetected() {
 	PlayerSpotted = true;
 	Halt = false;
 	UE_LOG(LogTemp, Warning, TEXT("%s: Player Spotted!"), *(GetName()));
@@ -121,35 +117,25 @@ void AEnemy02::AttachStatus(UStatusComponent* NewStatus) {
 	Status = NewStatus;
 }
 
-void AEnemy02::SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius, int32 DirectionTo, FVector ForceTo) {
+void AEnemy02::SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint) {
 	FRotator ActorRotation = FRotator{ 0,0,0 };
 	if (GetActorRotation().Yaw != 0) {
 		ActorRotation = FRotator{ 0,180,0 };
 	}
 	auto HitBox = GetWorld()->SpawnActor<AHitBoxActor>(
-		HitBoxBluePrint,
+		Blueprint,
 		GetTargetLocation(),
 		ActorRotation
 	);
 
 	HitBox->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-	HitBox->StoreValues(Damage, Time);
-	HitBox->InitializeHitBox(Location, Rotation, CapsuleHight, CapsuleRadius);
-	HitBox->InitializeValues(DirectionTo, ForceTo);
 }
 
-void AEnemy02::SpawnBasicAttack(int32 DirectionTo) {
-	SpawnHitBox(Status->ReturnBasicDamage(), BasicAttackActivateTime, BasicAttackSpawnLocation,
-		BasicAttackSpawnRotation, BasicAttackHight, BasicAttackRadius, DirectionTo, BasicAttackForce);
-}
-
-void AEnemy02::BasicAttack(int32 DirectionTo) {
-	if (Attacking) {
+void AEnemy02::BasicAttack() {
+	if (Attacking == false || FPlatformTime::Seconds() - LastAttack < BasicAttackInterval) { 
 		return;
-	} else {
-		Attacking = true;
-		LastAttack = FPlatformTime::Seconds();
 	}
 
-	SpawnBasicAttack(DirectionTo);
+	LastAttack = FPlatformTime::Seconds();
+	SpawnHitBox(HitBoxBluePrint);
 }

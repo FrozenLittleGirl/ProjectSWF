@@ -144,7 +144,7 @@ void AProjectSWFCharacter::Tick(float DeltaSeconds)
 	// update death animation
 	if (Status->DiedOrNot()) {
 		auto Animation = DiedAnimation;
-		if ((FPlatformTime::Seconds() - Status->ReturnDyingCount()) >= 0.34) {
+		if ((FPlatformTime::Seconds() - Status->ReturnDyingCount()) >= PlayDeathTime) {
 			TotallyDied = true;
 			Animation = DiedLoopAnimation;
 		}
@@ -243,26 +243,22 @@ void AProjectSWFCharacter::UpdateCharacter()
 	}
 }
 
-void AProjectSWFCharacter::SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius, int32 Direction, FVector Force) {
+void AProjectSWFCharacter::SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint) {
 	FRotator ActorRotation = FRotator{ 0,0,0 };
 	if (GetActorRotation().Yaw != 0) {
 		ActorRotation = FRotator{ 0,180,0 };
 	}
 	auto HitBox = GetWorld()->SpawnActor<AHitBoxActor>(
-		HitBoxBluePrint,
+		Blueprint,
 		GetTargetLocation(),
 		ActorRotation
 	);
 
 	HitBox->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-	HitBox->StoreValues(Damage, Time);
-	HitBox->InitializeHitBox(Location, Rotation, CapsuleHight, CapsuleRadius);
-	HitBox->InitializeValues(Direction, Force);
 }
 
-void AProjectSWFCharacter::SpawnBasicAttack(int32 Direction) {
-	SpawnHitBox(Status->ReturnBasicDamage(), BasicAttackActivateTime, BasicAttackSpawnLocation,
-		BasicAttackSpawnRotation, BasicAttackHight, BasicAttackRadius, Direction, PlayerForce);
+void AProjectSWFCharacter::SpawnBasicAttack() {
+	SpawnHitBox(HitBoxBluePrint);
 }
 
 void AProjectSWFCharacter::AttachStatus(UStatusComponent* NewStatus) {
@@ -281,9 +277,6 @@ void AProjectSWFCharacter::TakeDamage(int32 Damage, int32 ForceDirection, FVecto
 	if (ForceDirection < 0) {
 		NewForce.X = -NewForce.X;
 	}
-	//UE_LOG(LogTemp, Warning, TEXT("Damage Direction: %s"), *(NewForce.ToString()));
-	//UE_LOG(LogTemp, Warning, TEXT("Damage Direction: %f"), -Force.X);
-	UE_LOG(LogTemp, Warning, TEXT("Damage Direction: %d"), ForceDirection);
 	LaunchCharacter(NewForce, true, false);
 }
 

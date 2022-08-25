@@ -30,10 +30,6 @@ void UStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-int32 UStatusComponent::ReturnBasicDamage() {
-	return BasicDamage;
-}
-
 void UStatusComponent::TakeDamage(int32 Damage) {
 	Health = Health - Damage;
 	if (Health <= 0) {

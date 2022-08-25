@@ -41,22 +41,13 @@ void AHitBoxActor::InitializeHitBox(FVector Location, FRotator Rotation, float H
 }
 
 void AHitBoxActor::InitializeValues(int32 DirectionTo, FVector ForceTo) {
-	Direction = DirectionTo;
 	Force = ForceTo;
 }
 
 int32 AHitBoxActor::ReturnDirection() {
+	int Direction = 1;
+	if (GetActorRotation().Yaw != 0) {
+		Direction = -1;
+	}
 	return Direction;
-}
-
-FVector AHitBoxActor::ReturnForce() {
-	return Force;
-}
-
-int32 AHitBoxActor::ReturnDamage() {
-	return Damage;
-}
-
-float AHitBoxActor::ReturnPersistTime() {
-	return PersistTime;
 }

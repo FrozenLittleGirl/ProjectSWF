@@ -63,6 +63,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 		class UPaperFlipbook* DiedLoopAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
+		float PlayDeathTime = 0.34;
+
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
@@ -111,7 +114,6 @@ public:
 
 private:
 	//------- Variables ---------
-
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool Attacking = false;
 
@@ -142,7 +144,7 @@ private:
 	//------- Functions ---------
 	// Generate the hit box
 	UFUNCTION(BlueprintCallable, Category = "Hit")
-		void SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius, int32 Direction, FVector Force);
+		void SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint);
 
 	// Attach Status from the bluepirnt
 	UFUNCTION(BlueprintCallable, Category = "Setup")
@@ -153,21 +155,6 @@ private:
 		int32 AttackDirection();
 
 	//------- Basic Attack Setup ---------
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		float BasicAttackActivateTime = 0.26;
-
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		float BasicAttackRadius = 39.1;
-
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		float BasicAttackHight = 84.6;
-
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		FVector BasicAttackSpawnLocation = { 56.69, 0, -11 };
-
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		FRotator BasicAttackSpawnRotation = { 0, -90, 0 };
-
 	UFUNCTION(BlueprintCallable, Category = "BasicAttack")
-		void SpawnBasicAttack(int32 Direction);
+		void SpawnBasicAttack();
 };

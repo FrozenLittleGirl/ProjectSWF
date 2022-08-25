@@ -28,19 +28,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Setup")
 		int32 Health = 5;
 
-	UPROPERTY(EditAnywhere, Category = "Setup")
-		int32 BasicDamage = 1;
-
 	bool Died = false;
 	float DyingCount = 0;
 
 	// Functions
 
 public:
-	// Return Basic Damage
-	UFUNCTION(BlueprintCallable, Category = "Damage")
-		int32 ReturnBasicDamage();
-
 	// return current health
 	UFUNCTION(BlueprintCallable, Category = "CurrentStatus")
 		int32 ReturnHealth();

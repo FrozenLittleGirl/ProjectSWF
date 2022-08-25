@@ -32,7 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		void TakeDamage(int32 Damage, int32 ForceDirection, FVector Force);
 
-private:
+protected:
+	//------- General -------
+	FTimerHandle AttackTimeHandle;
 
 	UPROPERTY(EditAnywhere, Category = "Setup")
 		float WalkVelocity = 1;
@@ -60,13 +62,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Setup")
 		TSubclassOf<AHitBoxActor> HitBoxBluePrint;
 
+	bool Attacking = false;
+	float LastAttack = 0;
+
 	// Generate the hit box
 	UFUNCTION(BlueprintCallable, Category = "Hit")
-		void SpawnHitBox(int32 Damage, float Time, FVector Location, FRotator Rotation, float CapsuleHight, float CapsuleRadius, int32 DirectionTo, FVector ForceTo);
-
-protected:
-	// General
-	bool Attacking = false;
+		void SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint);
 
 	//------- Basic Actions ---------
 	UFUNCTION(BlueprintCallable, Category = "Player")
@@ -79,7 +80,7 @@ protected:
 		void MakeHalt();
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
-		void WalkTowardsPlayer();
+		void PlayerDetected();
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		void LoseTrackOfPlayer();
@@ -87,39 +88,14 @@ protected:
 	void Walk();
 
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void BasicAttack(int32 DirectionTo);
+		void BasicAttack();
 
 	//------- Functions ---------
 	// Attach Status from the bluepirnt
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 		void AttachStatus(UStatusComponent* NewStatus);
 
-	float LastAttack = 0;
-
 	// Basic Attack Setup
 	UPROPERTY(EditAnywhere, Category = "BasicAttack")
 		float BasicAttackInterval = 4;
-
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		float BasicAttackActivateTime = 0.26;
-
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		float BasicAttackRadius = 39.1;
-
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		float BasicAttackHight = 84.6;
-
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		FVector BasicAttackSpawnLocation = { 56.69, 0, -11 };
-
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		FRotator BasicAttackSpawnRotation = { 0, -90, 0 };
-
-	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		FVector BasicAttackForce = { 450, 0, 0 };
-
-	UFUNCTION(BlueprintCallable, Category = "BasicAttack")
-		void SpawnBasicAttack(int32 DirectionTo);
-
-
 };
