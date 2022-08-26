@@ -5,6 +5,7 @@
 #include "../ProjectSWFCharacter.h"
 #include "../Public/HitBoxActor.h"
 #include "../Public/Projectile.h"
+#include <Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
 
 // Sets default values
 AEnemy02::AEnemy02()
@@ -147,10 +148,12 @@ void AEnemy02::SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint) {
 void AEnemy02::SpawnProjectile(TSubclassOf<AProjectile> Blueprint) {
 	auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	auto ProjectVector = Player->GetTargetLocation() - GetTargetLocation();
-	float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ProjectVector, FVector{1,0,0})));
+	float CosAngle = FVector::DotProduct(ProjectVector, FVector{ 1,0,0 }) / ProjectVector.Size();
+	float Angle = FMath::RadiansToDegrees(acos(CosAngle));
 
-	FRotator Vec = { 0,0, Angle };
-	UE_LOG(LogTemp, Warning, TEXT("Angle: %f"), Angle);
+	FRotator Vec = { Angle,0,0 };
+	//UE_LOG(LogTemp, Warning, TEXT("dot product: %f"), FVector::DotProduct(ProjectVector, FVector{ 1,0,0 }));
+	UE_LOG(LogTemp, Warning, TEXT("Acos: %f"), Angle);
 
 	auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 		Blueprint,
