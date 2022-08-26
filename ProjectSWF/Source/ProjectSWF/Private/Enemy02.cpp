@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Enemy02.h"
 #include "../Public/StatusComponent.h"
 #include "../ProjectSWFCharacter.h"
 #include "../Public/HitBoxActor.h"
 #include "../Public/Projectile.h"
-#include "Enemy02.h"
 
 // Sets default values
 AEnemy02::AEnemy02()
@@ -150,7 +150,7 @@ void AEnemy02::SpawnProjectile(TSubclassOf<AProjectile> Blueprint) {
 	auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 		Blueprint,
 		GetTargetLocation(),
-		FRotator{0,0,0}
+		FRotator{ProjectVector.X,0,0}
 	);
 	Projectile->LaunchProjectile(ProjectVector);
 }
