@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "HitBoxActor.generated.h"
+#include "Projectile.generated.h"
 
-class UCapsuleComponent;
+class UProjectileMovementComponent;
 
 UCLASS()
-class PROJECTSWF_API AHitBoxActor : public AActor
+class PROJECTSWF_API AProjectile : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AHitBoxActor();
+	AProjectile();
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,8 +37,18 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void LaunchProjectile(FVector Angle);
+
 private:
+	UProjectileMovementComponent* MovementComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Values")
+		float LaunchSpeed = 0.26;
+
 	UFUNCTION(BlueprintCallable, Category = "Values")
 		int32 ReturnDirection();
+
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+		void AttachMovement(UProjectileMovementComponent* Component);
 
 };

@@ -8,6 +8,7 @@
 
 class UStatusComponent;
 class AHitBoxActor;
+class AProjectile;
 
 UCLASS()
 class PROJECTSWF_API AEnemy02 : public ACharacter
@@ -63,13 +64,19 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Setup")
 		TSubclassOf<AHitBoxActor> HitBoxBluePrint;
 
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		TSubclassOf<AProjectile> ProjectileBluePrint;
+
 	bool Attacking = false;
-	float LastAttack = 0;
 	float AttakingTime = 0;
 
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		float BasicAttackActivateTime = 0.26;
+
 	// Generate the hit box
-	UFUNCTION(BlueprintCallable, Category = "Hit")
-		void SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint);
+	virtual void SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint);
+
+	virtual void SpawnProjectile(TSubclassOf<AProjectile> Blueprint);
 
 	//------- Basic Actions ---------
 	UFUNCTION(BlueprintCallable, Category = "Player")
@@ -90,8 +97,7 @@ protected:
 
 	void Walk();
 
-	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void BasicAttack();
+	virtual void BasicAttack();
 
 	//------- Functions ---------
 	// Attach Status from the bluepirnt

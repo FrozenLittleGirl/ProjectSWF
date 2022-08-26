@@ -3,6 +3,7 @@
 #include "../Public/StatusComponent.h"
 #include "../ProjectSWFCharacter.h"
 #include "../Public/HitBoxActor.h"
+#include "../Public/Projectile.h"
 #include "Enemy02.h"
 
 // Sets default values
@@ -18,6 +19,9 @@ void AEnemy02::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (Direction == -1) {
+		bool result = SetActorRotation({ 0, 180, 0 });
+	}
 }
 
 // Called every frame
@@ -38,7 +42,7 @@ void AEnemy02::Tick(float DeltaTime)
 	if (Attacking) {
 		BasicAttack();
 		Attacking = false;
-		MakeHalt(0.26);
+		MakeHalt(BasicAttackActivateTime);
 		return;
 	}
 
@@ -135,6 +139,20 @@ void AEnemy02::SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint) {
 	);
 
 	HitBox->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+}
+
+void AEnemy02::SpawnProjectile(TSubclassOf<AProjectile> Blueprint) {
+	auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	auto ProjectVector = Player->GetTargetLocation() - GetTargetLocation();
+	UE_LOG(LogTemp, Warning, TEXT("Projectile Vector: %s"), *(ProjectVector.ToString()));
+	bool result = ProjectVector.Normalize();
+
+	auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+		Blueprint,
+		GetTargetLocation(),
+		FRotator{0,0,0}
+	);
+	Projectile->LaunchProjectile(ProjectVector);
 }
 
 void AEnemy02::BasicAttack() {

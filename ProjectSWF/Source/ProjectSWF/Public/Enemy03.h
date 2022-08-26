@@ -19,6 +19,16 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	// ------ Variables ------
+	bool NeedToTurn = false;
+
+	// ------ Function ------
+	//  reset enemy direction according to Direction
 	void UpdateFaceDirection();
+
+	// return 1 if Ploayer is on the right of the enemy, and -1 otherwise
+	int32 ReturnPlayerRelativeLocation();
+
+	virtual void BasicAttack() override;
 	
 };
