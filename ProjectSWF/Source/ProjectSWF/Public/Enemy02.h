@@ -50,10 +50,13 @@ protected:
 	// Halt
 
 	UPROPERTY(EditAnywhere, Category = "Setup")
-		float HaltTime = 2;
+		float TurnHaltTime = 2;
 
 	float LastHalt = 0;
 	float IndicatedHaltTime = 0;
+
+	// Last Attack Time
+	float LastAttack = -BasicAttackInterval;
 
 	bool Halt = false;
 
@@ -106,5 +109,8 @@ protected:
 
 	// Basic Attack Setup
 	UPROPERTY(EditAnywhere, Category = "BasicAttack")
-		float BasicAttackInterval = 4;
+		float BasicAttackInterval = 2;
+
+	UPROPERTY(EditAnywhere, Category = "BasicAttack")
+		float PreActiveBasicAttack = 0.4;
 };

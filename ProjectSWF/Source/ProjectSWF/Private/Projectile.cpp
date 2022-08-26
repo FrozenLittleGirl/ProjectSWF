@@ -34,7 +34,7 @@ int32 AProjectile::ReturnDirection() {
 }
 
 void AProjectile::LaunchProjectile(FVector Angle) {
-	MovementComponent->SetVelocityInLocalSpace(Angle * LaunchSpeed);
+	//MovementComponent->SetVelocityInLocalSpace(Angle * LaunchSpeed);
 	MovementComponent->Activate();
 }
 

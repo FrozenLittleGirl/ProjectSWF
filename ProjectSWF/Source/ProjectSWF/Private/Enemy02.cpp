@@ -42,6 +42,7 @@ void AEnemy02::Tick(float DeltaTime)
 	if (Attacking) {
 		BasicAttack();
 		Attacking = false;
+		LastAttack = FPlatformTime::Seconds() + BasicAttackActivateTime;
 		MakeHalt(BasicAttackActivateTime);
 		return;
 	}
@@ -60,8 +61,10 @@ void AEnemy02::Tick(float DeltaTime)
 			Walk();
 		}
 		else {
-			Attacking = true;
-			MakeHalt(BasicAttackInterval);
+			if (FPlatformTime::Seconds() - LastAttack >= BasicAttackInterval) {
+				Attacking = true;
+				MakeHalt(PreActiveBasicAttack);
+			}
 		}
 	}
 	else {
@@ -97,7 +100,7 @@ void AEnemy02::Walk() {
 }
 
 void AEnemy02::ReverseDirection() {
-	MakeHalt(HaltTime);
+	MakeHalt(TurnHaltTime);
 	Direction = Direction * -1;
 }
 
@@ -120,7 +123,7 @@ void AEnemy02::PlayerDetected() {
 void AEnemy02::LoseTrackOfPlayer() {
 	UE_LOG(LogTemp, Warning, TEXT("%s: Lose Track of Player!"), *(GetName()));
 	PlayerSpotted = false;
-	MakeHalt(HaltTime);
+	MakeHalt(TurnHaltTime);
 }
 
 void AEnemy02::AttachStatus(UStatusComponent* NewStatus) {
@@ -144,18 +147,22 @@ void AEnemy02::SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint) {
 void AEnemy02::SpawnProjectile(TSubclassOf<AProjectile> Blueprint) {
 	auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	auto ProjectVector = Player->GetTargetLocation() - GetTargetLocation();
-	UE_LOG(LogTemp, Warning, TEXT("Projectile Vector: %s"), *(ProjectVector.ToString()));
-	bool result = ProjectVector.Normalize();
+	float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ProjectVector, FVector{1,0,0})));
+
+	FRotator Vec = { 0,0, Angle };
+	UE_LOG(LogTemp, Warning, TEXT("Angle: %f"), Angle);
 
 	auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 		Blueprint,
 		GetTargetLocation(),
-		FRotator{ProjectVector.X,0,0}
+		Vec
 	);
 	Projectile->LaunchProjectile(ProjectVector);
 }
 
 void AEnemy02::BasicAttack() {
+
+
 	SpawnHitBox(HitBoxBluePrint);
 	AttakingTime = FPlatformTime::Seconds();
 }
