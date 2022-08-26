@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "../Public/StatusComponent.h"
 #include "EnemyOne.h"
+#include "../Public/StatusComponent.h"
 
 // Sets default values
 AEnemyOne::AEnemyOne()

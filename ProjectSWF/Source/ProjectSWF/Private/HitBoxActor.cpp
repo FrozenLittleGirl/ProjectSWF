@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "HitBoxActor.h"
 #include <Runtime/Engine/Classes/Kismet/GameplayStatics.h>
 #include "Components/CapsuleComponent.h"
-#include "HitBoxActor.h"
 
 // Sets default values
 AHitBoxActor::AHitBoxActor()
