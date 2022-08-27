@@ -118,5 +118,5 @@ protected:
 		float PreActiveBasicAttack = 0.4;
 
 	UPROPERTY(EditAnywhere, Category = "Projectile")
-		float ProjectileRelativeLength = 65;
+		float ProjectileRelativeLength = 0;
 };

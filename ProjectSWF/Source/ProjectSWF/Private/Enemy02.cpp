@@ -31,6 +31,7 @@ void AEnemy02::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (Status->DiedOrNot()) { 
+		bool result = Destroy();
 		return;
 	}
 
