@@ -18,6 +18,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void TakeDamage(int32 Damage, int32 ForceDirection, FVector Force) override;
+
 private:
 	// ------ Variables ------
 	bool NeedToTurn = false;

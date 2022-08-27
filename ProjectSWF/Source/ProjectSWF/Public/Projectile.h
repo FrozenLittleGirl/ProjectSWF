@@ -43,7 +43,7 @@ private:
 	UProjectileMovementComponent* MovementComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Values")
-		float LaunchSpeed = 0.26;
+		float LaunchSpeed = 10;
 
 	UFUNCTION(BlueprintCallable, Category = "Values")
 		int32 ReturnDirection();

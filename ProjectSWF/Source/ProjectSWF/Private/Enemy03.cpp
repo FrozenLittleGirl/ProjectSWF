@@ -1,11 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Enemy03.h"
+#include "../Public/StatusComponent.h"
 #include "../ProjectSWFCharacter.h"
 
 // Called every frame
 void AEnemy03::Tick(float DeltaTime)
 {
+	if (Status->DiedOrNot()) {
+		bool result = Destroy();
+		return;
+	}
+
 	auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if (Player->DiedOrNot()) { return; }
 
@@ -24,6 +30,7 @@ void AEnemy03::Tick(float DeltaTime)
 	}
 
 	if (NeedToTurn) {
+		Direction *= -1;
 		UpdateFaceDirection();
 		NeedToTurn = false;
 	}
@@ -31,7 +38,8 @@ void AEnemy03::Tick(float DeltaTime)
 	if (PlayerSpotted) {
 		int32 PlayerRelativeLocation = ReturnPlayerRelativeLocation();
 		if (PlayerRelativeLocation != Direction) {
-			ReverseDirection();
+			// Give time to turn to anothe direction
+			MakeHalt(TurnHaltTime);
 			NeedToTurn = true;
 		}
 		Attacking = true;
@@ -61,6 +69,16 @@ int32 AEnemy03::ReturnPlayerRelativeLocation() {
 }
 
 void AEnemy03::BasicAttack() {
-	SpawnProjectile(ProjectileBluePrint);
+	SpawnProjectile(ProjectileBluePrint, ProjectileRelativeLength);
 	AttakingTime = FPlatformTime::Seconds();
+}
+
+void AEnemy03::TakeDamage(int32 Damage, int32 ForceDirection, FVector Force) {
+	if (ForceDirection == Direction) {
+		UE_LOG(LogTemp, Warning, TEXT("Takeing Damage"));
+		Status->TakeDamage(Damage);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Attack Blocked"));
+	}
 }

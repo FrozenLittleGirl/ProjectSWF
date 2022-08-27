@@ -31,7 +31,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
-		void TakeDamage(int32 Damage, int32 ForceDirection, FVector Force);
+		virtual void TakeDamage(int32 Damage, int32 ForceDirection, FVector Force);
+
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+		void TakeDamageNoDirection(int32 Damage);
 
 protected:
 	//------- General -------
@@ -79,7 +82,7 @@ protected:
 	// Generate the hit box
 	virtual void SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint);
 
-	virtual void SpawnProjectile(TSubclassOf<AProjectile> Blueprint);
+	virtual void SpawnProjectile(TSubclassOf<AProjectile> Blueprint, float Length);
 
 	//------- Basic Actions ---------
 	UFUNCTION(BlueprintCallable, Category = "Player")
@@ -113,4 +116,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "BasicAttack")
 		float PreActiveBasicAttack = 0.4;
+
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+		float ProjectileRelativeLength = 65;
 };

@@ -30,6 +30,10 @@ void AEnemy02::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (Status->DiedOrNot()) { 
+		return;
+	}
+
 	auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if (Player->DiedOrNot()) { return; }
 
@@ -81,10 +85,14 @@ void AEnemy02::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 void AEnemy02::TakeDamage(int32 Damage, int32 ForceDirection, FVector Force) {
-	//UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
 	Status->TakeDamage(Damage);
 	FVector NewForce = {Force.X * ForceDirection, Force.Y, Force.Z};
 	LaunchCharacter(NewForce, true, false);
+}
+
+void AEnemy02::TakeDamageNoDirection(int32 Damage) {
+	UE_LOG(LogTemp, Warning, TEXT("%s is taking damage of %d"), *(GetName()), Damage);
+	Status->TakeDamage(Damage);
 }
 
 void AEnemy02::Walk() {	
@@ -145,21 +153,28 @@ void AEnemy02::SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint) {
 	HitBox->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 }
 
-void AEnemy02::SpawnProjectile(TSubclassOf<AProjectile> Blueprint) {
+void AEnemy02::SpawnProjectile(TSubclassOf<AProjectile> Blueprint, float Length) {
 	auto Player = Cast<AProjectSWFCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	auto ProjectVector = Player->GetTargetLocation() - GetTargetLocation();
+	ProjectVector.Y = 0;
+	auto result = ProjectVector.Normalize();
 	float CosAngle = FVector::DotProduct(ProjectVector, FVector{ 1,0,0 }) / ProjectVector.Size();
 	float Angle = FMath::RadiansToDegrees(acos(CosAngle));
 
-	FRotator Vec = { Angle,0,0 };
-	//UE_LOG(LogTemp, Warning, TEXT("dot product: %f"), FVector::DotProduct(ProjectVector, FVector{ 1,0,0 }));
-	UE_LOG(LogTemp, Warning, TEXT("Acos: %f"), Angle);
+	FRotator Vec = { 0,0,0 };
+	if (Player->GetTargetLocation().Z - GetTargetLocation().Z < 0) {
+		Vec.Pitch = -Angle;
+	}
+	else {
+		Vec.Pitch = Angle;
+	}
 
 	auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 		Blueprint,
-		GetTargetLocation(),
+		GetTargetLocation() + ProjectVector * Length,
 		Vec
 	);
+	// ProjectVector here seems to be useless
 	Projectile->LaunchProjectile(ProjectVector);
 }
 
