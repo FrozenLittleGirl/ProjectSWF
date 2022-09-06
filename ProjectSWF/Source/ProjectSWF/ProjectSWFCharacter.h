@@ -66,6 +66,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 		float PlayDeathTime = 0.34;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Setup")
+		FName LastLevel = "DevTest_Level";
+
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
@@ -136,8 +139,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Setup")
 		FVector PlayerForce = { 10, 0, 0 };
-
-	FName LastLevel = "DevTest_Level";
 
 	UStatusComponent* Status = nullptr;
 
