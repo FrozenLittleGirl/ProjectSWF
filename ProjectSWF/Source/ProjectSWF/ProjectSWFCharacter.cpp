@@ -74,9 +74,14 @@ AProjectSWFCharacter::AProjectSWFCharacter()
     // 	TextComponent->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
     // 	TextComponent->SetupAttachment(RootComponent);
 
-	// Enable replication on the Sprite component so animations show up when networked
-	GetSprite()->SetIsReplicated(true);
-	bReplicates = true;
+	StatusComp = CreateDefaultSubobject<UStatusComponent>("StatusComp");
+
+	PlayerEState = EState::EState_Idle;
+	DodgeLaunchVelocity = FVector(2000.0f, 0.0f, 0.0f);
+	DodgeDelay = 0.5f;
+	DodgeHalt = 0.1f;
+	BasicAttackDelay = 0.33f;
+	bDodgeHalt = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -89,46 +94,45 @@ void AProjectSWFCharacter::UpdateAnimation()
 	const float PlayerVelocityZ = PlayerVelocity.Z;
 
 	UPaperFlipbook* DesiredAnimation;
-
-	// Deal with Dodging
-	if (Dodging) {
+	
+	switch (PlayerEState)
+	{
+	case EState::EState_Dodge:
 		DesiredAnimation = DodgeAnimation;
-
 		if (GetSprite()->GetFlipbook() != DesiredAnimation)
 		{
 			GetSprite()->SetFlipbook(DesiredAnimation);
 		}
 		return;
-	}
-
-	// Deal with attacking
-	if (Attacking) {
+	case EState::EState_BasicAttack:
 		DesiredAnimation = BasicAttackAnimation;
-
 		if (GetSprite()->GetFlipbook() != DesiredAnimation)
 		{
 			GetSprite()->SetFlipbook(DesiredAnimation);
 		}
-		
 		return;
+	default:
+		// Are we Jumping?
+		if (PlayerVelocityZ > 0.0f)
+		{
+			DesiredAnimation = WhileJumpAnimation;
+		}
+		else if (PlayerVelocityZ < 0.0f)
+		{
+			DesiredAnimation = StopJumpAnimation;
+		} 
+		// Are we moving or standing still?
+		else if (PlayerSpeedSqr > 0.0f)
+		{
+			DesiredAnimation = RunningAnimation;
+		}
+		else
+		{
+			DesiredAnimation = IdleAnimation;
+		}
 	}
 
-	// Are we Jumping?
-	if (PlayerVelocityZ > 0.0f) {
-		DesiredAnimation = WhileJumpAnimation;
-	}
-	else if (PlayerVelocityZ < 0.0f) {
-		DesiredAnimation = StopJumpAnimation;
-	} 
-	// Are we moving or standing still?
-	else if (PlayerSpeedSqr > 0.0f) {
-		DesiredAnimation = RunningAnimation;
-	}
-	else {
-		DesiredAnimation = IdleAnimation;
-	}
-
-	if( GetSprite()->GetFlipbook() != DesiredAnimation 	)
+	if (GetSprite()->GetFlipbook() != DesiredAnimation)
 	{
 		GetSprite()->SetFlipbook(DesiredAnimation);
 	}
@@ -142,18 +146,21 @@ void AProjectSWFCharacter::Tick(float DeltaSeconds)
 	if (TotallyDied) { return; }
 
 	// update death animation
-	if (Status->DiedOrNot()) {
-		auto Animation = DiedAnimation;
-		if ((FPlatformTime::Seconds() - Status->ReturnDyingCount()) >= PlayDeathTime) {
-			TotallyDied = true;
-			Animation = DiedLoopAnimation;
-		}
+	if (ensure(StatusComp))
+	{
+		if (StatusComp->DiedOrNot()) {
+			auto Animation = DiedAnimation;
+			if ((FPlatformTime::Seconds() - StatusComp->ReturnDyingCount()) >= PlayDeathTime) {
+				TotallyDied = true;
+				Animation = DiedLoopAnimation;
+			}
 
-		if (GetSprite()->GetFlipbook() != Animation)
-		{
-			GetSprite()->SetFlipbook(Animation);
+			if (GetSprite()->GetFlipbook() != Animation)
+			{
+				GetSprite()->SetFlipbook(Animation);
+			}
+			return;
 		}
-		return;
 	}
 
 	// other
@@ -163,6 +170,10 @@ void AProjectSWFCharacter::Tick(float DeltaSeconds)
 		}
 	}
 
+	const FVector PlayerVelocity = GetVelocity();
+	const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
+	const float PlayerVelocityZ = PlayerVelocity.Z;
+	
 	UpdateCharacter();	
 }
 
@@ -175,8 +186,9 @@ void AProjectSWFCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 	// Note: the 'Jump' action and the 'MoveRight' axis are bound to actual keys/buttons/sticks in DefaultInput.ini (editable from Project Settings..Input)
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("BasicAttack", IE_Pressed, this, &AProjectSWFCharacter::BasicAttacking);
+	PlayerInputComponent->BindAction("BasicAttack", IE_Pressed, this, &AProjectSWFCharacter::BasicAttack);
 	PlayerInputComponent->BindAction("Revive", IE_Pressed, this, &AProjectSWFCharacter::Revive);
+	PlayerInputComponent->BindAction("Dodge", IE_Pressed, this, &AProjectSWFCharacter::Dodge);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AProjectSWFCharacter::MoveRight);
 
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AProjectSWFCharacter::TouchStarted);
@@ -189,11 +201,6 @@ void AProjectSWFCharacter::MoveRight(float Value)
 
 	// Apply the input to the character motion
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
-}
-
-void AProjectSWFCharacter::BasicAttacking() {
-	
-
 }
 
 void AProjectSWFCharacter::Revive() {
@@ -220,9 +227,8 @@ void AProjectSWFCharacter::TouchStopped(const ETouchIndex::Type FingerIndex, con
 
 void AProjectSWFCharacter::UpdateCharacter()
 {
-	// Update animation to match the motion
 	UpdateAnimation();
-
+	
 	// Now setup the rotation of the controller based on the direction we are travelling
 	const FVector PlayerVelocity = GetVelocity();	
 	float TravelDirection = PlayerVelocity.X;
@@ -261,18 +267,14 @@ void AProjectSWFCharacter::SpawnBasicAttack() {
 	SpawnHitBox(HitBoxBluePrint);
 }
 
-void AProjectSWFCharacter::AttachStatus(UStatusComponent* NewStatus) {
-	Status = NewStatus;
-}
-
 void AProjectSWFCharacter::TakeDamageNoDirection(int32 Damage) {
 	UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
-	Status->TakeDamage(Damage);
+	StatusComp->TakeDamage(Damage);
 }
 
 void AProjectSWFCharacter::TakeDamage(int32 Damage, int32 ForceDirection, FVector Force) {
 	//UE_LOG(LogTemp, Warning, TEXT("%s is taking damage: %d"), *(GetName()), Damage);
-	Status->TakeDamage(Damage);
+	StatusComp->TakeDamage(Damage);
 	FVector NewForce = Force;
 	if (ForceDirection < 0) {
 		NewForce.X = -NewForce.X;
@@ -289,7 +291,78 @@ FVector AProjectSWFCharacter::ReturnPlayerForce() {
 }
 
 bool AProjectSWFCharacter::DiedOrNot() {
-	return Status->DiedOrNot();
+	return StatusComp->DiedOrNot();
+}
+
+void AProjectSWFCharacter::Dodge()
+{
+	if (PlayerEState == EState::EState_Dodge || bDodgeHalt)
+	{
+		return;
+	}
+	if (GetMovementComponent()->IsFalling())
+	{
+		if (NumDodge == 1)
+		{
+			NumDodge = 0;
+		} else
+		{
+			return;
+		}
+	}
+	BasicAttackAbort();
+	PlayerEState = EState::EState_Dodge;
+	
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	DisableInput(PlayerController);
+	
+	JumpZVelocity = GetCharacterMovement()->JumpZVelocity;
+	GroundFriction = GetCharacterMovement()->GroundFriction;
+	Gravity = GetCharacterMovement()->GravityScale;
+	GetCharacterMovement()->JumpZVelocity = 0.f;
+	GetCharacterMovement()->GravityScale = 0.f;
+	GetCharacterMovement()->GroundFriction = 0.f;
+	
+	LaunchCharacter(DodgeLaunchVelocity * AttackDirection(), true, true);
+	GetWorldTimerManager().SetTimer(TimerHandle_Dodge, this, &AProjectSWFCharacter::Dodge_TimeElapsed, DodgeDelay);
+}
+
+void AProjectSWFCharacter::Dodge_TimeElapsed()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	EnableInput(PlayerController);
+	PlayerEState = EState::EState_Idle;
+	GetCharacterMovement()->JumpZVelocity = JumpZVelocity;
+	GetCharacterMovement()->GravityScale = Gravity;
+	GetCharacterMovement()->GroundFriction = GroundFriction;
+	bDodgeHalt = true;
+	GetWorldTimerManager().SetTimer(TimerHandle_DodgeHalt, this, &AProjectSWFCharacter::DodgeHalt_TimeElapsed, DodgeHalt);
+}
+
+void AProjectSWFCharacter::DodgeHalt_TimeElapsed()
+{
+	bDodgeHalt = false;
+}
+
+void AProjectSWFCharacter::BasicAttack()
+{
+	if (PlayerEState == EState::EState_Dodge || PlayerEState == EState::EState_BasicAttack)
+	{
+		return;
+	}
+	PlayerEState = EState::EState_BasicAttack;
+	SpawnHitBox(HitBoxBluePrint);
+	GetWorldTimerManager().SetTimer(TimerHandle_BasicAttack, this, &AProjectSWFCharacter::BasicAttack_TimeElapsed, BasicAttackDelay);
+}
+
+void AProjectSWFCharacter::BasicAttack_TimeElapsed()
+{
+	PlayerEState = EState::EState_Idle;
+}
+
+void AProjectSWFCharacter::BasicAttackAbort()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_BasicAttack);
 }
 
 int32 AProjectSWFCharacter::AttackDirection() {

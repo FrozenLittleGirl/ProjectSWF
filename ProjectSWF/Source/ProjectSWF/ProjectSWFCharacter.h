@@ -9,6 +9,19 @@
 class UTextRenderComponent;
 class UStatusComponent;
 class AHitBoxActor;
+class UPaperFlipbook;
+
+UENUM(BlueprintType)
+enum class EState : uint8 {
+	EState_Idle				UMETA(DisplayName="Idle"),
+	EState_BasicAttack		UMETA(DisplayName="BasicAttack"),
+	EState_Dodge			UMETA(DisplayName="Dodge"),
+	EState_Jump				UMETA(DisplayName="Jump"),
+	EState_Fall				UMETA(DisplayName="Fall"),
+	EState_Run				UMETA(DisplayName="Run"),
+	EState_Die				UMETA(DisplayName="Die"),
+	EState_DieLoop			UMETA(DisplayName="DieLoop"),
+};
 
 /**
  * This class is the default character for ProjectSWF, and it is responsible for all
@@ -33,50 +46,42 @@ class AProjectSWFCharacter : public APaperCharacter
 
 	UTextRenderComponent* TextComponent;
 	virtual void Tick(float DeltaSeconds) override;
+	
 protected:
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
-	class UPaperFlipbook* RunningAnimation;
-
+	UPaperFlipbook* RunningAnimation;
+	
 	// The animation to play while idle (standing still)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-	class UPaperFlipbook* IdleAnimation;
-
+	UPaperFlipbook* IdleAnimation;
+	
 	// ... To falling
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-		class UPaperFlipbook* StopJumpAnimation;
-
+	UPaperFlipbook* StopJumpAnimation;
+	
 	// ... To Jump
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-		class UPaperFlipbook* WhileJumpAnimation;
-
+	UPaperFlipbook* WhileJumpAnimation;
+	
 	// ... To attack
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-		class UPaperFlipbook* BasicAttackAnimation;
-
+	UPaperFlipbook* BasicAttackAnimation;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-		class UPaperFlipbook* DodgeAnimation;
-
+	UPaperFlipbook* DodgeAnimation;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-		class UPaperFlipbook* DiedAnimation;
-
+	UPaperFlipbook* DiedAnimation;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-		class UPaperFlipbook* DiedLoopAnimation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
-		float PlayDeathTime = 0.34;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Setup")
-		FName LastLevel = "DevTest_Level";
+	UPaperFlipbook* DiedLoopAnimation;
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
 	/** Called for side to side input */
 	void MoveRight(float Value);
-
-	// Attacking Actions
-	void BasicAttacking();
 
 	// Respawn Player
 	void Revive();
@@ -115,6 +120,45 @@ public:
 
 	bool DiedOrNot();
 
+protected:
+	UPROPERTY(BlueprintReadWrite)
+	EState PlayerEState;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
+	float PlayDeathTime = 0.34;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Setup")
+	FName LastLevel = "DevTest_Level";
+	
+	UPROPERTY(BlueprintReadWrite)
+	UStatusComponent* StatusComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Dodge")
+	float DodgeDelay;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Dodge")
+	float DodgeHalt;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Dodge")
+	FVector DodgeLaunchVelocity;
+	
+	FTimerHandle TimerHandle_Dodge;
+	FTimerHandle TimerHandle_DodgeHalt;
+	
+	void Dodge();
+	void Dodge_TimeElapsed();
+	void DodgeHalt_TimeElapsed();
+	
+	// Attacking Actions
+	UPROPERTY(EditDefaultsOnly)
+	float BasicAttackDelay;
+	
+	FTimerHandle TimerHandle_BasicAttack;
+	
+	void BasicAttack();
+	void BasicAttack_TimeElapsed();
+	void BasicAttackAbort();
+
 private:
 	//------- Variables ---------
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -138,24 +182,23 @@ private:
 	bool TotallyDied = false;
 
 	UPROPERTY(EditAnywhere, Category = "Setup")
-		FVector PlayerForce = { 10, 0, 0 };
-
-	UStatusComponent* Status = nullptr;
+	FVector PlayerForce = { 10, 0, 0 };
 
 	//------- Functions ---------
 	// Generate the hit box
 	UFUNCTION(BlueprintCallable, Category = "Hit")
-		void SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint);
-
-	// Attach Status from the bluepirnt
-	UFUNCTION(BlueprintCallable, Category = "Setup")
-		void AttachStatus(UStatusComponent* NewStatus);
+	void SpawnHitBox(TSubclassOf<AHitBoxActor> Blueprint);
 
 	// return face direction
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		int32 AttackDirection();
+	int32 AttackDirection();
 
 	//------- Basic Attack Setup ---------
 	UFUNCTION(BlueprintCallable, Category = "BasicAttack")
-		void SpawnBasicAttack();
+	void SpawnBasicAttack();
+
+	float GroundFriction;
+	float Gravity;
+	float JumpZVelocity;
+	bool bDodgeHalt;
 };
