@@ -12,6 +12,7 @@
 #include "Public/StatusComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Public/HitBoxActor.h"
+#include "Interfaces/IHttpResponse.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -99,18 +100,10 @@ void AProjectSWFCharacter::UpdateAnimation()
 	{
 	case EState::EState_Dodge:
 		DesiredAnimation = DodgeAnimation;
-		if (GetSprite()->GetFlipbook() != DesiredAnimation)
-		{
-			GetSprite()->SetFlipbook(DesiredAnimation);
-		}
-		return;
+		break;
 	case EState::EState_BasicAttack:
 		DesiredAnimation = BasicAttackAnimation;
-		if (GetSprite()->GetFlipbook() != DesiredAnimation)
-		{
-			GetSprite()->SetFlipbook(DesiredAnimation);
-		}
-		return;
+		break;
 	default:
 		// Are we Jumping?
 		if (PlayerVelocityZ > 0.0f)
